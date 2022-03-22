@@ -1495,6 +1495,10 @@ Public Class frmMain
         dlgClimaticSummary.ShowDialog()
     End Sub
 
+    Public Function GetDataBook() As clsDataBook
+        Return clsDataBook
+    End Function
+
     Public Function GetDataFrameCount() As Integer
         If clsDataBook IsNot Nothing Then
             Return clsDataBook.DataFrames.Count
@@ -2431,4 +2435,47 @@ Public Class frmMain
     Private Sub mnuOptionsByContextDefineOnFarm_Click(sender As Object, e As EventArgs) Handles mnuOptionsByContextDefineOnFarm.Click
         dlgDefineOptionsByContext.ShowDialog()
     End Sub
+
+
+    Private Shared benchMarkStartTime As Date
+    Private Shared bBenchMark As Boolean
+
+    Public Shared Sub StartTimeBenchMarkFunction(strActivity As String)
+
+        'OrElse strActivity.Contains("get_data_frame")
+        'strActivity.Contains("import")
+        If strActivity.Contains("get_data_frame(convert_to_character=TRUE") OrElse strActivity.Contains("get_variables_metadata(convert_to_character=TRUE") Then
+            bBenchMark = True
+        Else
+            bBenchMark = False
+            Exit Sub
+        End If
+
+        benchMarkStartTime = DateTime.Now
+        My.Computer.FileSystem.WriteAllText("C:\Users\LENOVO\Desktop\benchmark.txt",
+                                                 Environment.NewLine & "----------------------" & Environment.NewLine,
+                                               True)
+
+        My.Computer.FileSystem.WriteAllText("C:\Users\LENOVO\Desktop\benchmark.txt",
+                                            "Started at: " & benchMarkStartTime.ToString() & Environment.NewLine & strActivity & Environment.NewLine,
+                                               True)
+    End Sub
+
+    Public Shared Sub EndTimeBenchMarkFunction(strActivity As String)
+        If Not bBenchMark Then
+            Exit Sub
+        End If
+
+        Dim endTime As Date = DateTime.Now
+        Dim diff As TimeSpan = endTime - benchMarkStartTime
+
+        My.Computer.FileSystem.WriteAllText("C:\Users\LENOVO\Desktop\benchmark.txt",
+                                                strActivity & Environment.NewLine & "Ended at: " & endTime.ToString & " - Time diff: " & diff.TotalSeconds.ToString & " secs" & Environment.NewLine,
+                                               True)
+
+
+    End Sub
+
+
+
 End Class

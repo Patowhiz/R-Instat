@@ -27,12 +27,24 @@ Public Class clsColumnMetaData
     ''' <summary>
     ''' Returns data for a given cell within the Column Meta data table
     ''' </summary>
-    ''' <param name="row"></param>
-    ''' <param name="column"></param>
+    ''' <param name="rowIndex"></param>
+    ''' <param name="columnIndex"></param>
     ''' <returns></returns>
-    Public ReadOnly Property Data(row As Integer, column As Integer) As Object
+    Public ReadOnly Property Data(rowIndex As Integer, columnIndex As Integer) As Object
         Get
-            Return _clsDataFrame(row, column)
+            Return _clsDataFrame(rowIndex, columnIndex)
+        End Get
+    End Property
+
+    ''' <summary>
+    ''' Returns data for a given cell within the Column Meta data table
+    ''' </summary>
+    ''' <param name="rowIndex"></param>
+    ''' <param name="columnName"></param>
+    ''' <returns></returns>
+    Public ReadOnly Property Data(rowIndex As Integer, columnName As String) As Object
+        Get
+            Return _clsDataFrame(rowIndex, columnName)
         End Get
     End Property
 

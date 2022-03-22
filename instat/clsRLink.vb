@@ -1096,7 +1096,10 @@ Public Class RLink
         strCommand = strVariableName & " <- " & strScript
         If clsEngine IsNot Nothing Then
             Evaluate(strCommand, bSilent:=bSilent, bSeparateThread:=bSeparateThread, bShowWaitDialogOverride:=bShowWaitDialogOverride, strError:=strError)
+            frmMain.StartTimeBenchMarkFunction("Get .Net SymbolicExpression: " & strVariableName & " - for script: " & strCommand)
             expTemp = GetSymbol(strVariableName, bSilent:=True)
+            frmMain.EndTimeBenchMarkFunction("SymbolicExpression returned to R-Instant")
+
             'Very important to remove the variable after getting it otherwise could be returning wrong variable later if a command gives an error
             Evaluate("rm(" & strVariableName & ")", bSilent:=bSilent, bSeparateThread:=bSeparateThread)
         End If
@@ -1274,7 +1277,10 @@ Public Class RLink
                 If bSeparateThread Then
                     thrRScript = New Threading.Thread(Sub()
                                                           Try
+                                                              frmMain.StartTimeBenchMarkFunction("R.Net Evaluating Script: " & Environment.NewLine & strScript)
                                                               clsEngine.Evaluate(strScript)
+                                                              frmMain.EndTimeBenchMarkFunction("R.Net finished evaluating script")
+
                                                           Catch ex As Exception
                                                               If Not bSilent Then
                                                                   bErrorMessageOpen = True
@@ -1355,7 +1361,10 @@ Public Class RLink
 
         If clsEngine IsNot Nothing Then
             Try
+                'frmMain.StartTimeBenchMarkFunction("Get .Net SymbolicExpression: " & strSymbol)
                 expTemp = clsEngine.GetSymbol(strSymbol)
+                'frmMain.EndTimeBenchMarkFunction("SymbolicExpression returned to R-Instant")
+
             Catch ex As Exception
                 If Not bSilent Then
                     MsgBox(ex.Message & Environment.NewLine & "The error occurred in attempting to retrieve:" & strSymbol, MsgBoxStyle.Critical, "Error retrieving R variable")
