@@ -82,6 +82,44 @@ Public MustInherit Class ucrLinuxGrid
         Return New clsWorksheetAdapter(tab)
     End Function
 
+    Private Sub ReOrderWorksheets() Implements IGrid.ReOrderWorksheets
+        Dim iNewPosition As Integer
+        Dim bFound As Boolean = False
+        Dim iCount As Integer
+        Dim strName As String = ""
+        iCount = 0
+        For Each clsDataframe In _clsDataBook.DataFrames
+            For i As Integer = 0 To tcTabs.TabPages.Count - 1
+                If tcTabs.TabPages(i).Text = clsDataframe.strName Then
+                    strName = clsDataframe.strName
+                    iNewPosition = iCount
+                    bFound = True
+                    Exit For
+                End If
+            Next
+            If bFound Then
+                Dim newtab = GetTabPage(strName)
+                If newtab IsNot Nothing AndAlso tcTabs.TabPages.Count > 1 Then
+                    tcTabs.TabPages.Remove(newtab)
+                    tcTabs.TabPages.Insert(iNewPosition, newtab)
+                    iCount += 1
+                    bFound = False
+                End If
+            End If
+        Next
+    End Sub
+
+    Private Function GetTabPage(strName As String) As TabPage
+        Dim tab As TabPage = Nothing
+        For i As Integer = 0 To tcTabs.TabPages.Count - 1
+            If tcTabs.TabPages(i).Text = strName Then
+                tab = tcTabs.TabPages(i)
+                Exit For
+            End If
+        Next
+        Return tab
+    End Function
+
     Public Sub CopyRange() Implements IGrid.CopyRange
         Dim dataGrid = GetDataGridFromSelectedTab()
         dataGrid.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableWithoutHeaderText

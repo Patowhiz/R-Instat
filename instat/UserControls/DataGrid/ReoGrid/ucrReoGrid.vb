@@ -71,6 +71,33 @@ Public MustInherit Class ucrReoGrid
         Return New clsWorksheetAdapter(fillWorkSheet)
     End Function
 
+    Private Sub ReOrderWorksheets() Implements IGrid.ReOrderWorksheets
+        Dim iNewPosition As Integer
+        Dim strName As String = Nothing
+        Dim bFound As Boolean = False
+        Dim iCount As Integer
+        iCount = 0
+        For Each clsDataframe In _clsDataBook.DataFrames
+            For Each tempWorkSheet In grdData.Worksheets
+                If tempWorkSheet.Name = clsDataframe.strName Then
+                    strName = clsDataframe.strName
+                    iNewPosition = iCount
+                    bFound = True
+                    Exit For
+                End If
+            Next
+            If bFound Then
+                Dim fillWorkSheet = grdData.GetWorksheetByName(strName)
+                If fillWorkSheet IsNot Nothing AndAlso iNewPosition < grdData.Worksheets.Count Then
+                    grdData.MoveWorksheet(fillWorkSheet, iNewPosition)
+                    grdData.CurrentWorksheet = fillWorkSheet
+                    iCount += 1
+                    bFound = False
+                End If
+            End If
+        Next
+    End Sub
+
     Public Sub CopyRange() Implements IGrid.CopyRange
         grdData.CurrentWorksheet.Copy()
     End Sub
