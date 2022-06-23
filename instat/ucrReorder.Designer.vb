@@ -87,6 +87,7 @@ Partial Class ucrReorder
         '
         'lstAvailableData
         '
+        Me.lstAvailableData.AllowDrop = True
         Me.lstAvailableData.Dock = System.Windows.Forms.DockStyle.Left
         Me.lstAvailableData.FullRowSelect = True
         Me.lstAvailableData.HideSelection = False

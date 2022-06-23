@@ -288,4 +288,58 @@ Public Class ucrReorder
     Private Sub lstAvailableData_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstAvailableData.SelectedIndexChanged
         RaiseEvent SelectedIndexChanged(sender, e)
     End Sub
+
+    Private bMoveItem As Boolean
+
+    'Private Sub lstAvailableData_MouseDown(sender As Object, e As MouseEventArgs) Handles lstAvailableData.MouseDown
+    '    bMoveItem = True
+    'End Sub
+
+    'Private Sub lstAvailableData_MouseMove(sender As Object, e As MouseEventArgs) Handles lstAvailableData.MouseMove
+    '    If Not bMoveItem Then
+    '        Exit Sub
+    '    End If
+
+    '    'todo.
+
+    '    Dim aa As New Label
+    '    aa.Text = lstAvailableData.SelectedItems.Item(0).Text
+    '    aa.DoDragDrop(aa.Text, DragDropEffects.Copy)
+    '    bMoveItem = False
+
+    'End Sub
+
+    'Private Sub lstAvailableData_DragDrop(sender As Object, e As DragEventArgs) Handles lstAvailableData.DragDrop
+
+    'End Sub
+
+
+    Dim privateDrag As Boolean
+    Private Sub lstAvailableData_ItemDrag(sender As Object, e As ItemDragEventArgs) Handles lstAvailableData.ItemDrag
+        privateDrag = True
+        DoDragDrop(e.Item, DragDropEffects.Copy)
+        privateDrag = False
+    End Sub
+
+    Private Sub lstAvailableData_DragEnter(sender As Object, e As DragEventArgs) Handles lstAvailableData.DragEnter
+        If privateDrag Then
+            e.Effect = e.AllowedEffect
+        End If
+
+    End Sub
+
+    Private Sub lstAvailableData_DragOver(sender As Object, e As DragEventArgs) Handles lstAvailableData.DragOver
+        'todo. left here
+        Dim dragItem = e.Data.GetData(GetType(ListViewItem))
+
+    End Sub
+
+    Private Sub lstAvailableData_DragDrop(sender As Object, e As DragEventArgs) Handles lstAvailableData.DragDrop
+        Dim ll = e.Data.GetData(DataFormats.Text)
+        Dim dragItem = e.Data.GetData(GetType(ListViewItem))
+        lstAvailableData.Items.Remove(dragItem)
+        lstAvailableData.Items.Add(dragItem)
+    End Sub
+
+
 End Class
