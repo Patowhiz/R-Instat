@@ -59,6 +59,8 @@ Partial Class dlgClimSoft
         Me.ucrReceiverMultipleElements = New instat.ucrReceiverMultiple()
         Me.ucrReceiverMultipleStations = New instat.ucrReceiverMultiple()
         Me.ucrBase = New instat.ucrButtons()
+        Me.ucrComboboxTable = New instat.ucrInputComboBox()
+        Me.Label1 = New System.Windows.Forms.Label()
         Me.SuspendLayout()
         '
         'cmdEstablishConnection
@@ -75,7 +77,7 @@ Partial Class dlgClimSoft
         '
         Me.lblElements.AutoSize = True
         Me.lblElements.ImeMode = System.Windows.Forms.ImeMode.NoControl
-        Me.lblElements.Location = New System.Drawing.Point(256, 194)
+        Me.lblElements.Location = New System.Drawing.Point(256, 244)
         Me.lblElements.Name = "lblElements"
         Me.lblElements.Size = New System.Drawing.Size(98, 13)
         Me.lblElements.TabIndex = 4
@@ -85,7 +87,7 @@ Partial Class dlgClimSoft
         '
         Me.lblStations.AutoSize = True
         Me.lblStations.ImeMode = System.Windows.Forms.ImeMode.NoControl
-        Me.lblStations.Location = New System.Drawing.Point(256, 38)
+        Me.lblStations.Location = New System.Drawing.Point(256, 88)
         Me.lblStations.Name = "lblStations"
         Me.lblStations.Size = New System.Drawing.Size(93, 13)
         Me.lblStations.TabIndex = 2
@@ -212,7 +214,7 @@ Partial Class dlgClimSoft
         Me.ucrComboBoxElements.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.ucrComboBoxElements.GetSetSelectedIndex = -1
         Me.ucrComboBoxElements.IsReadOnly = False
-        Me.ucrComboBoxElements.Location = New System.Drawing.Point(259, 210)
+        Me.ucrComboBoxElements.Location = New System.Drawing.Point(259, 260)
         Me.ucrComboBoxElements.Margin = New System.Windows.Forms.Padding(9, 12, 9, 12)
         Me.ucrComboBoxElements.Name = "ucrComboBoxElements"
         Me.ucrComboBoxElements.Size = New System.Drawing.Size(137, 21)
@@ -224,7 +226,7 @@ Partial Class dlgClimSoft
         Me.ucrComboBoxStations.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.ucrComboBoxStations.GetSetSelectedIndex = -1
         Me.ucrComboBoxStations.IsReadOnly = False
-        Me.ucrComboBoxStations.Location = New System.Drawing.Point(256, 53)
+        Me.ucrComboBoxStations.Location = New System.Drawing.Point(256, 103)
         Me.ucrComboBoxStations.Margin = New System.Windows.Forms.Padding(9, 12, 9, 12)
         Me.ucrComboBoxStations.Name = "ucrComboBoxStations"
         Me.ucrComboBoxStations.Size = New System.Drawing.Size(137, 21)
@@ -244,7 +246,7 @@ Partial Class dlgClimSoft
         '
         Me.ucrReceiverMultipleElements.AutoSize = True
         Me.ucrReceiverMultipleElements.frmParent = Me
-        Me.ucrReceiverMultipleElements.Location = New System.Drawing.Point(259, 234)
+        Me.ucrReceiverMultipleElements.Location = New System.Drawing.Point(259, 284)
         Me.ucrReceiverMultipleElements.Margin = New System.Windows.Forms.Padding(0)
         Me.ucrReceiverMultipleElements.Name = "ucrReceiverMultipleElements"
         Me.ucrReceiverMultipleElements.Selector = Nothing
@@ -257,7 +259,7 @@ Partial Class dlgClimSoft
         '
         Me.ucrReceiverMultipleStations.AutoSize = True
         Me.ucrReceiverMultipleStations.frmParent = Me
-        Me.ucrReceiverMultipleStations.Location = New System.Drawing.Point(256, 77)
+        Me.ucrReceiverMultipleStations.Location = New System.Drawing.Point(256, 127)
         Me.ucrReceiverMultipleStations.Margin = New System.Windows.Forms.Padding(0)
         Me.ucrReceiverMultipleStations.Name = "ucrReceiverMultipleStations"
         Me.ucrReceiverMultipleStations.Selector = Nothing
@@ -273,8 +275,31 @@ Partial Class dlgClimSoft
         Me.ucrBase.Location = New System.Drawing.Point(8, 402)
         Me.ucrBase.Margin = New System.Windows.Forms.Padding(4, 5, 4, 5)
         Me.ucrBase.Name = "ucrBase"
-        Me.ucrBase.Size = New System.Drawing.Size(405, 52)
+        Me.ucrBase.Size = New System.Drawing.Size(408, 52)
         Me.ucrBase.TabIndex = 14
+        '
+        'ucrComboboxTable
+        '
+        Me.ucrComboboxTable.AddQuotesIfUnrecognised = True
+        Me.ucrComboboxTable.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.ucrComboboxTable.GetSetSelectedIndex = -1
+        Me.ucrComboboxTable.IsReadOnly = False
+        Me.ucrComboboxTable.Location = New System.Drawing.Point(256, 58)
+        Me.ucrComboboxTable.Margin = New System.Windows.Forms.Padding(9, 12, 9, 12)
+        Me.ucrComboboxTable.Name = "ucrComboboxTable"
+        Me.ucrComboboxTable.Size = New System.Drawing.Size(137, 21)
+        Me.ucrComboboxTable.TabIndex = 2
+        '
+        'Label1
+        '
+        Me.Label1.AutoSize = True
+        Me.Label1.ImeMode = System.Windows.Forms.ImeMode.NoControl
+        Me.Label1.Location = New System.Drawing.Point(256, 43)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(130, 13)
+        Me.Label1.TabIndex = 17
+        Me.Label1.Text = "Select Observation Table:"
+        Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'dlgClimSoft
         '
@@ -282,6 +307,8 @@ Partial Class dlgClimSoft
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.AutoSize = True
         Me.ClientSize = New System.Drawing.Size(408, 459)
+        Me.Controls.Add(Me.ucrComboboxTable)
+        Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.ucrChkUnstackData)
         Me.Controls.Add(Me.ucrChkFlagsData)
         Me.Controls.Add(Me.lblConnection)
@@ -332,4 +359,6 @@ Partial Class dlgClimSoft
     Friend WithEvents lblConnection As Label
     Friend WithEvents ucrChkFlagsData As ucrCheck
     Friend WithEvents ucrChkUnstackData As ucrCheck
+    Friend WithEvents ucrComboboxTable As ucrInputComboBox
+    Friend WithEvents Label1 As Label
 End Class

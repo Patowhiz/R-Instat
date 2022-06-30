@@ -1805,7 +1805,7 @@ DataBook$set("public", "database_disconnect", function() {
 }
 )
 
-DataBook$set("public", "import_from_climsoft", function(stationfiltercolumn = "stationId", stations = c(), elementfiltercolumn = "elementId", elements = c(), include_observation_data = FALSE, include_observation_flags = FALSE, unstack_data = FALSE, include_elements_info = FALSE, start_date = NULL, end_date = NULL) {
+DataBook$set("public", "import_from_climsoft", function( observation_table = "observationfinal", stationfiltercolumn = "stationId", stations = c(), elementfiltercolumn = "elementId", elements = c(), include_observation_data = FALSE, include_observation_flags = FALSE, unstack_data = FALSE, include_elements_info = FALSE, start_date = NULL, end_date = NULL) {
   #need to perform checks here
   con <- self$get_database_connection()
   
@@ -1814,7 +1814,7 @@ DataBook$set("public", "import_from_climsoft", function(stationfiltercolumn = "s
     #construct a string of station values from the passed station vector eg of result ('191','122')
     passed_station_values <- paste0("(", paste0("'", stations, "'", collapse =  ", "), ")")
     
-    #get the station info of the passed station values
+    #get all station information of the passed station filter values
     db_station_info <- DBI::dbGetQuery(con, paste0( "SELECT * FROM station WHERE ", stationfiltercolumn, " IN ", passed_station_values,  ";"))
     
     #set values of station ids only
@@ -1847,10 +1847,10 @@ DataBook$set("public", "import_from_climsoft", function(stationfiltercolumn = "s
     
     flags_column_col_sql <- " "
     if (include_observation_flags) {
-      flags_column_col_sql <- ", observationfinal.flag AS flag"
+      flags_column_col_sql <- ", flag AS flag"
     }
     
-    #get databounds filter query if dates have been passed
+    #get data bounds filter query if dates have been passed
     date_bounds_filter <- ""
     if (!is.null(start_date)) {
       if (!lubridate::is.Date(start_date))
@@ -1866,12 +1866,13 @@ DataBook$set("public", "import_from_climsoft", function(stationfiltercolumn = "s
     }
     
     #construct observation data sql query and get data from database
+    #the observation data tables have the following columns that R-Instat needs; recordedFrom, describedBy, obsDatetime, obsValue, flag
     if (length(stations) > 0) {
       #if stations passed get observation data of selected elements of passed stations
-      db_observation_data <- DBI::dbGetQuery(con, paste0("SELECT observationfinal.recordedFrom As station, obselement.abbreviation AS element, observationfinal.obsDatetime AS datetime, observationfinal.obsValue AS obsvalue", flags_column_col_sql, " FROM observationfinal INNER JOIN obselement ON observationfinal.describedBy = obselement.elementId WHERE observationfinal.recordedFrom IN ", station_ids_values, " AND observationfinal.describedBy IN ", element_ids_values, date_bounds_filter, " ORDER BY observationfinal.recordedFrom, observationfinal.describedBy;"))
+      db_observation_data <- DBI::dbGetQuery(con, paste0("SELECT recordedFrom As station, obselement.abbreviation AS element, obsDatetime AS datetime, obsValue AS obsvalue", flags_column_col_sql, " FROM  ",observation_table," INNER JOIN obselement ON  ",observation_table,".describedBy = obselement.elementId WHERE recordedFrom IN ", station_ids_values, " AND describedBy IN ", element_ids_values, date_bounds_filter, " ORDER BY recordedFrom, describedBy;"))
     } else{
       #if stations have not been passed get observation data of passed elements of all stations
-      db_observation_data <- DBI::dbGetQuery(con, paste0("SELECT observationfinal.recordedFrom As station, obselement.abbreviation AS element, observationfinal.obsDatetime AS datetime, observationfinal.obsValue AS obsvalue", flags_column_col_sql, " FROM observationfinal INNER JOIN obselement ON observationfinal.describedBy = obselement.elementId WHERE observationfinal.describedBy IN ", element_ids_values, date_bounds_filter, " ORDER BY observationfinal.recordedFrom, observationfinal.describedBy;"))
+      db_observation_data <- DBI::dbGetQuery(con, paste0("SELECT recordedFrom As station, obselement.abbreviation AS element, obsDatetime AS datetime, obsValue AS obsvalue", flags_column_col_sql, " FROM  ",observation_table," INNER JOIN obselement ON  ",observation_table,".describedBy = obselement.elementId WHERE describedBy IN ", element_ids_values, date_bounds_filter, " ORDER BY recordedFrom, describedBy;"))
       
       #then get the stations ids (uniquely) from the observation data and use the ids to get station info
       station_ids_values <- paste0("(", paste0("'", as.character(unique(db_observation_data$station) ), "'", collapse = ", "), ")")
