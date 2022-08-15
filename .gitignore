@@ -144,7 +144,7 @@ publish/
 *.nupkg
 # The packages folder can be ignored because of Package Restore
 # Removed because need these folders for R Packages
-#**/packages/*
+**/packages/*
 # except build/, which is used as an MSBuild target.
 !**/packages/build/
 # Uncomment if necessary however generally it will be regenerated when needed
