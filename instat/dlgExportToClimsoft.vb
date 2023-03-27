@@ -20,8 +20,9 @@ Imports instat.Translations
 Public Class dlgExportToClimsoft
     Private bFirstLoad As Boolean = True
     Private bReset As Boolean = True
-    Private clsDataFrameFunction, clsCurrentNewColumnFunction, clsDummyFunction, clsMutateFunction, clsExportClimsoftFunction As New RFunction
+    Private clsDataFrameFunction, clsCurrentNewColumnFunction, clsDummyFunction, clsMutateFunction, clsExportClimsoftFunction, clsExportCommentsFunction As New RFunction
     Private clsPipeOperator As New ROperator
+
 
     Private Sub dlgExportToClimsoft_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         If bFirstLoad Then
@@ -44,6 +45,25 @@ Public Class dlgExportToClimsoft
         ucrReceiverStation.bAutoFill = True
         ucrReceiverStation.Selector = ucrSelectorImportToClimsoft
         ucrReceiverStation.SetLinkedDisplayControl(lblStation)
+
+        ucrDataFrameSheets.SetParameter(New RParameter("data_name", 0))
+        ucrDataFrameSheets.SetParameterIsString()
+
+        ucrReceiverComments.SetParameter(New RParameter("x", 1))
+        ucrReceiverComments.SetParameterIsRFunction()
+        ucrReceiverComments.SetItemType("dataframe")
+
+        ucrReceiverComments.SetLinkedDisplayControl(lblcomments)
+
+        ucrPnlPrepareData.AddRadioButton(rdoData)
+        ucrPnlPrepareData.AddRadioButton(rdoStation)
+        ucrPnlPrepareData.AddParameterValuesCondition(rdoData, "checked", "data")
+        ucrPnlPrepareData.AddParameterValuesCondition(rdoStation, "checked", "station")
+
+        ucrChkAddReport.SetText("Add Reports")
+        ucrChkAddReport.AddToLinkedControls({ucrReceiverComments, ucrDataFrameSheets, ucrInputExportFile}, {True}, bNewLinkedHideIfParameterMissing:=True)
+        ucrChkAddReport.AddParameterValuesCondition(True, "comments", "True")
+        ucrChkAddReport.AddParameterValuesCondition(False, "comments", "False")
 
         ucrReceiverDate.SetParameter(New RParameter("date", 2))
         ucrReceiverDate.SetParameterIsRFunction()
@@ -69,9 +89,15 @@ Public Class dlgExportToClimsoft
         ucrChkNewDataFrame.AddParameterValuesCondition(False, "dataframe", "False")
 
         ucrChkExportDataFrame.SetText(" Export Data Frame(s)")
-        ucrChkExportDataFrame.AddToLinkedControls(ucrInputExportFile, {True}, bNewLinkedAddRemoveParameter:=True, bNewLinkedHideIfParameterMissing:=True)
+        ucrChkExportDataFrame.AddToLinkedControls(ucrInputExportFile, {True}, bNewLinkedHideIfParameterMissing:=True)
         ucrChkExportDataFrame.AddParameterValuesCondition(True, "export", "True")
         ucrChkExportDataFrame.AddParameterValuesCondition(False, "export", "False")
+
+        ucrChkSingleValue.SetText("Single Value")
+        ucrChkSingleValue.AddToLinkedControls(ucrInputHour, {True}, bNewLinkedAddRemoveParameter:=True, bNewLinkedHideIfParameterMissing:=True)
+        ucrChkSingleValue.AddParameterValuesCondition(True, "value", "True")
+        ucrChkSingleValue.AddParameterValuesCondition(False, "value", "False")
+
 
         ucrSaveNewDataFrame.SetSaveTypeAsDataFrame()
         ucrSaveNewDataFrame.SetIsTextBox()
@@ -81,6 +107,11 @@ Public Class dlgExportToClimsoft
         ucrInputExportFile.IsReadOnly = True
         ucrInputExportFile.SetLinkedDisplayControl(lblExport)
 
+        ucrPnlPrepareData.AddToLinkedControls({ucrReceiverComments, ucrReceiverElements, ucrInputExportFile,
+                                              ucrInputHour, ucrInputLevel, ucrChkAddReport, ucrChkExportDataFrame,
+                                              ucrChkNewDataFrame}, {rdoData}, bNewLinkedHideIfParameterMissing:=True)
+
+
     End Sub
 
     Private Sub SetDefaults()
@@ -89,14 +120,21 @@ Public Class dlgExportToClimsoft
         clsCurrentNewColumnFunction = New RFunction
         clsMutateFunction = New RFunction
         clsExportClimsoftFunction = New RFunction
+        clsExportCommentsFunction = New RFunction
         clsPipeOperator = New ROperator
 
         ucrSelectorImportToClimsoft.Reset()
         ucrSaveNewDataFrame.Reset()
         ucrReceiverElements.SetMeAsReceiver()
 
+        AddingComments()
+
         clsDummyFunction.AddParameter("dataframe", "True", iPosition:=0)
         clsDummyFunction.AddParameter("export", "False", iPosition:=1)
+        clsDummyFunction.AddParameter("comments", "False", iPosition:=2)
+        clsDummyFunction.AddParameter("checked", "data", iPosition:=3)
+        clsDummyFunction.AddParameter("value", "True", iPosition:=4)
+
 
         clsDataFrameFunction.SetRCommand("data.frame")
         clsDataFrameFunction.AddParameter("hour", 6, iPosition:=3)
@@ -114,34 +152,63 @@ Public Class dlgExportToClimsoft
         clsExportClimsoftFunction.SetRCommand("export")
         clsExportClimsoftFunction.AddParameter("x", clsROperatorParameter:=clsPipeOperator, iPosition:=0)
 
+        clsExportCommentsFunction.SetPackageName("rio")
+        clsExportCommentsFunction.SetRCommand("export")
+
         ucrBase.clsRsyntax.SetBaseROperator(clsPipeOperator)
         ucrBase.clsRsyntax.AddToBeforeCodes(clsCurrentNewColumnFunction)
 
         DataFrameAssignTo()
+
     End Sub
 
     Private Sub SetRCodeForControls(bReset As Boolean)
+        ucrInputExportFile.AddAdditionalCodeParameterPair(clsExportCommentsFunction, New RParameter("file", 0), iAdditionalPairNo:=1)
+
         ucrReceiverDate.SetRCode(clsDataFrameFunction, bReset)
         ucrInputHour.SetRCode(clsDataFrameFunction, bReset)
         ucrInputLevel.SetRCode(clsDataFrameFunction, bReset)
         ucrSaveNewDataFrame.SetRCode(clsPipeOperator, bReset)
         ucrInputExportFile.SetRCode(clsExportClimsoftFunction, bReset)
+        ucrPnlPrepareData.SetRCode(clsDummyFunction, bReset)
         If bReset Then
-            ucrChkExportDataFrame.SetRCode(clsDummyFunction, bReset)
             ucrChkNewDataFrame.SetRCode(clsDummyFunction, bReset)
+            ucrChkAddReport.SetRCode(clsDummyFunction, bReset)
+            ucrChkSingleValue.SetRCode(clsDummyFunction, bReset)
+            ucrReceiverComments.SetRCode(clsExportCommentsFunction, bReset)
+            ucrChkExportDataFrame.SetRCode(clsDummyFunction, bReset)
         End If
     End Sub
 
     Private Sub TestOkEnabled()
-        ucrBase.OKEnabled(Not ucrReceiverDate.IsEmpty _
-                              AndAlso Not ucrReceiverElements.IsEmpty _
-                              AndAlso Not ucrReceiverStation.IsEmpty
-                              )
-        If ucrChkNewDataFrame.Checked And Not ucrSaveNewDataFrame.IsComplete Then
-            ucrBase.OKEnabled(False)
+
+        If ucrChkNewDataFrame.Checked Then
+            If Not ucrReceiverDate.IsEmpty AndAlso Not ucrReceiverElements.IsEmpty AndAlso Not ucrReceiverStation.IsEmpty AndAlso ucrSaveNewDataFrame.IsComplete Then
+                ucrBase.OKEnabled(True)
+            Else
+                ucrBase.OKEnabled(False)
+            End If
+        ElseIf ucrChkExportDataFrame.Checked Then
+            If Not ucrReceiverDate.IsEmpty AndAlso Not ucrReceiverElements.IsEmpty AndAlso Not ucrReceiverStation.IsEmpty AndAlso Not ucrInputExportFile.IsEmpty Then
+                ucrBase.OKEnabled(True)
+            Else
+                ucrBase.OKEnabled(False)
+            End If
+        ElseIf ucrChkAddReport.Checked Then
+            If Not ucrReceiverComments.IsEmpty AndAlso Not ucrInputExportFile.IsEmpty Then
+                ucrBase.OKEnabled(True)
+            Else
+                ucrBase.OKEnabled(False)
+            End If
         End If
-        If ucrChkExportDataFrame.Checked And ucrInputExportFile.IsEmpty Then
-            ucrBase.OKEnabled(False)
+
+        If ucrChkNewDataFrame.Checked AndAlso ucrChkExportDataFrame.Checked Then
+            If Not ucrReceiverDate.IsEmpty AndAlso Not ucrReceiverElements.IsEmpty AndAlso Not ucrReceiverStation.IsEmpty AndAlso ucrSaveNewDataFrame.IsComplete AndAlso Not ucrInputExportFile.IsEmpty AndAlso ucrSaveNewDataFrame.IsComplete Then
+                ucrBase.OKEnabled(True)
+            Else
+                ucrBase.OKEnabled(False)
+            End If
+
         End If
 
     End Sub
@@ -164,10 +231,6 @@ Public Class dlgExportToClimsoft
 
     Private Sub ucrSelectorImportToClimsoft_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrSelectorImportToClimsoft.ControlValueChanged
         DataFrameAssignTo()
-    End Sub
-
-    Private Sub ucrChkNewDataFrame_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrChkNewDataFrame.ControlValueChanged, ucrChkExportDataFrame.ControlValueChanged
-        SettingBaseFunction()
     End Sub
 
     Private Sub ucrReceiverElements_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrReceiverElements.ControlValueChanged
@@ -209,11 +272,14 @@ Public Class dlgExportToClimsoft
             ucrBase.clsRsyntax.ClearCodes()
             ucrBase.clsRsyntax.AddToBeforeCodes(clsCurrentNewColumnFunction)
             ucrBase.clsRsyntax.AddToAfterCodes(clsExportClimsoftFunction)
+            ucrInputExportFile.Visible = True
+
             cmdBrowse.Visible = True
         ElseIf ucrChkNewDataFrame.Checked AndAlso Not ucrChkExportDataFrame.Checked Then
             ucrBase.clsRsyntax.SetBaseROperator(clsPipeOperator)
             ucrBase.clsRsyntax.lstAfterCodes.Clear()
             cmdBrowse.Visible = False
+            ucrInputExportFile.Visible = False
 
         ElseIf ucrChkExportDataFrame.Checked AndAlso Not ucrChkNewDataFrame.Checked Then
             ucrBase.clsRsyntax.lstBeforeCodes.Clear()
@@ -221,7 +287,23 @@ Public Class dlgExportToClimsoft
             ucrBase.clsRsyntax.SetBaseRFunction(clsExportClimsoftFunction)
             ucrBase.clsRsyntax.lstAfterCodes.Clear()
             cmdBrowse.Visible = True
+            ucrInputExportFile.Visible = True
+
+        ElseIf ucrChkAddReport.Checked Then
+            ucrBase.clsRsyntax.ClearCodes()
+            ucrBase.clsRsyntax.SetBaseRFunction(clsExportCommentsFunction)
+            cmdBrowse.Visible = True
+            ucrInputExportFile.Visible = True
         End If
+    End Sub
+
+    Private Sub AddingComments()
+        If ucrDataFrameSheets.cboAvailableDataFrames.Text = ".comment" Then
+            ucrReceiverComments.SetText(ucrDataFrameSheets.cboAvailableDataFrames.Text)
+        Else
+            ucrReceiverComments.SetText("")
+        End If
+
     End Sub
 
     Private Sub SelectFileToSave()
@@ -240,13 +322,30 @@ Public Class dlgExportToClimsoft
         End Using
     End Sub
 
+    Private Sub EnableDisableComments()
+        If ucrChkExportDataFrame.Checked AndAlso Not ucrInputExportFile.IsEmpty Then
+            ucrChkAddReport.Enabled = True
+        ElseIf ucrChkNewDataFrame.Checked AndAlso ucrChkExportDataFrame.Checked AndAlso Not ucrInputExportFile.IsEmpty Then
+            ucrChkAddReport.Enabled = True
+        ElseIf ucrChkExportDataFrame.Checked AndAlso ucrChkAddReport.Enabled Then
+            ucrChkAddReport.Checked = False
+        ElseIf Not ucrChkNewDataFrame.Checked AndAlso Not ucrChkExportDataFrame.Checked AndAlso ucrChkAddReport.Checked Then
+            ucrChkAddReport.Enabled = True
+
+        Else
+            ucrChkAddReport.Enabled = False
+
+        End If
+
+    End Sub
+
     Private Sub ucrReceiverStation_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrReceiverStation.ControlValueChanged
         AddStationName()
     End Sub
 
     Private Sub ucrReceiverElements_ControlContentsChanged(ucrChangedControl As ucrCore) Handles ucrReceiverElements.ControlContentsChanged,
-        ucrReceiverDate.ControlContentsChanged, ucrReceiverStation.ControlContentsChanged, ucrSaveNewDataFrame.ControlContentsChanged, ucrInputLevel.ControlContentsChanged,
-        ucrInputLevel.ControlContentsChanged, ucrInputExportFile.ControlContentsChanged, ucrChkExportDataFrame.ControlContentsChanged
+        ucrReceiverDate.ControlContentsChanged, ucrReceiverStation.ControlContentsChanged, ucrSaveNewDataFrame.ControlContentsChanged, ucrInputLevel.ControlContentsChanged, ucrChkNewDataFrame.ControlContentsChanged,
+        ucrInputHour.ControlContentsChanged, ucrInputExportFile.ControlContentsChanged, ucrChkExportDataFrame.ControlContentsChanged, ucrChkAddReport.ControlContentsChanged, ucrReceiverComments.ControlContentsChanged
         TestOkEnabled()
     End Sub
 
@@ -255,5 +354,56 @@ Public Class dlgExportToClimsoft
             SelectFileToSave()
         End If
         SettingBaseFunction()
+        EnableDisableComments()
+    End Sub
+
+    Private Sub ucrDataFrameSheets_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrDataFrameSheets.ControlValueChanged
+        AddingComments()
+    End Sub
+
+    Private Sub ucrReceiverComments_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrReceiverComments.ControlValueChanged
+        clsExportCommentsFunction.AddParameter("x", clsRFunctionParameter:=ucrDataFrameSheets.clsCurrDataFrame, iPosition:=1)
+    End Sub
+
+    Private Sub ucrChkAddReport_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrChkAddReport.ControlValueChanged
+        AddingComments()
+        If ucrChkAddReport.Checked Then
+            ucrChkExportDataFrame.Enabled = False
+            ucrChkExportDataFrame.Checked = False
+            ucrChkNewDataFrame.Checked = False
+        Else
+            EnableDisableComments()
+
+            ucrChkExportDataFrame.Enabled = True
+
+        End If
+        SettingBaseFunction()
+
+    End Sub
+
+    Private Sub ucrChkNewDataFrame_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrChkNewDataFrame.ControlValueChanged
+        SettingBaseFunction()
+        EnableDisableComments()
+    End Sub
+
+    Private Sub ucrPnlPrepareData_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrPnlPrepareData.ControlValueChanged
+        SettingBaseFunction()
+        AddingComments()
+        EnableDisableComments()
+    End Sub
+
+    Private Sub ucrBase_ClickOk(sender As Object, e As EventArgs) Handles ucrBase.ClickOk
+        EnableDisableComments()
+        TestOkEnabled()
+
+    End Sub
+
+    Private Sub ucrChkExportDataFrame_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrChkExportDataFrame.ControlValueChanged
+        EnableDisableComments()
+        SettingBaseFunction()
+    End Sub
+
+    Private Sub ucrInputExportFile_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrInputExportFile.ControlValueChanged
+        EnableDisableComments()
     End Sub
 End Class
