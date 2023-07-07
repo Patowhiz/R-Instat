@@ -372,7 +372,7 @@ Public Class ucrOutputPage
 
         Dim richText As New RichTextBox
         For Each element In SelectedElements
-            AddElementToRichTextBox(element, richText)
+            AddElementOutputToRichTextBox(element, richText)
         Next
         CopySelectedTextToClipBoard(richText, richText.Rtf)
     End Sub
@@ -385,7 +385,7 @@ Public Class ucrOutputPage
         Dim richText As New RichTextBox
         For Each checkbox In _checkBoxes
             Dim element As clsOutputElement = checkbox.Tag
-            AddElementToRichTextBox(element, richText)
+            AddElementOutputToRichTextBox(element, richText)
         Next
         richText.SaveFile(path)
     End Sub
@@ -400,29 +400,36 @@ Public Class ucrOutputPage
         Return False
     End Function
 
-    Private Sub AddElementToRichTextBox(element As clsOutputElement, richText As RichTextBox)
+    Private Sub AddElementOutputToRichTextBox(element As clsOutputElement, richText As RichTextBox)
         Select Case element.OutputType
             Case OutputType.Script
                 FillRichTextBoxWithFormatedRScript(richText, element.FormattedRScript)
             Case OutputType.TextOutput
+                Dim strOutput As String = ""
+                If element.IsFile Then
+                    For Each strLine As String In IO.File.ReadLines(element.Output)
+                        strOutput = strOutput & strLine & Environment.NewLine
+                    Next strLine
+                Else
+                    strOutput = element.Output
+                End If
                 'todo. check if output is file or not. if file, read the contents of the file
-                AddFormatedTextToRichTextBox(richText, element.Output, OutputFont.ROutputFont, OutputFont.ROutputColour)
+                AddFormatedTextToRichTextBox(richText, strOutput, OutputFont.ROutputFont, OutputFont.ROutputColour)
             Case OutputType.ImageOutput
                 Clipboard.Clear()
                 'todo. instead of copy paste, add image to rtf directly from file?
                 Clipboard.SetImage(GetBitmapFromFile(element.Output))
                 richText.Paste()
+            Case OutputType.HtmlOutput
+
+
         End Select
         richText.AppendText(Environment.NewLine)
         richText.AppendText(Environment.NewLine)
     End Sub
 
     Private Function GetBitmapFromFile(strFilename As String) As Bitmap
-        Dim image As Bitmap
-        Using fs As New IO.FileStream(strFilename, IO.FileMode.Open)
-            image = New Bitmap(Drawing.Image.FromStream(fs))
-        End Using
-        Return image
+        Return New Bitmap(strFilename)
     End Function
 
     Private Sub AddFormatedTextToRichTextBox(richTextBox As RichTextBox, text As String, font As Font, colour As Color)
