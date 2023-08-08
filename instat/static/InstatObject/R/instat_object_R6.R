@@ -954,6 +954,17 @@ DataBook$set("public", "get_column_names", function(data_name, as_list = FALSE, 
 }
 )
 
+DataBook$set("public", "get_variables_metadata_filtered", function(data_name, as_list = FALSE, include = list(), exclude = list(), excluded_items = c(), max_no, use_current_column_selection = TRUE) {
+  if(missing(data_name)) {
+    #TODO what to do with excluded items in this case?
+    return(lapply(self$get_data_objects(), function(x) x$get_variables_metadata_filtered(as_list, include = include, exclude = exclude, max_no = max_no, use_current_column_selection = use_current_column_selection)))
+  } 
+  else {
+    return(self$get_data_objects(data_name)$get_variables_metadata_filtered(as_list, include, exclude, excluded_items = excluded_items, max_no = max_no, use_current_column_selection = use_current_column_selection))
+  }
+}
+)
+
 DataBook$set("public", "reorder_columns_in_data", function(data_name, col_order){
   self$get_data_objects(data_name)$reorder_columns_in_data(col_order = col_order)
 }

@@ -1287,10 +1287,9 @@ Public Class RLink
     '''                                     'nc_dim_variables'.</param>
     '''--------------------------------------------------------------------------------------------
     Public Sub FillListView(lstView As ListView, strType As String, Optional lstIncludedDataTypes As List(Of KeyValuePair(Of String, String())) = Nothing, Optional lstExcludedDataTypes As List(Of KeyValuePair(Of String, String())) = Nothing, Optional strDataFrameName As String = "", Optional strHeading As String = "Variables", Optional strExcludedItems As String() = Nothing, Optional strDatabaseQuery As String = "", Optional strNcFilePath As String = "")
-        Dim vecColumns As GenericVector = Nothing
+        Dim vecColumns As GenericVector
         Dim chrCurrColumns As CharacterVector
-        Dim i As Integer
-        Dim grps As New ListViewGroup
+        Dim grps As ListViewGroup
         Dim clsGetItems As New RFunction
         Dim clsIncludeList As New RFunction
         Dim clsExcludeList As New RFunction
@@ -1305,139 +1304,165 @@ Public Class RLink
         Dim strTemp As String
         Dim lviTemp As ListViewItem
         Dim strTopItemText As String = ""
+        Dim bColumnsForSingleDataFrame As Boolean = Not String.IsNullOrWhiteSpace(strDataFrameName) AndAlso strType = "column"
 
-        If bInstatObjectExists Then
-            Select Case strType
-                Case "column"
-                    clsGetItems.SetRCommand(strInstatDataObject & "$get_column_names")
-                Case "metadata"
-                    clsGetItems.SetRCommand(strInstatDataObject & "$get_metadata_fields")
-                Case "filter"
-                    clsGetItems.SetRCommand(strInstatDataObject & "$get_filter_names")
-                Case "column_selection"
-                    clsGetItems.SetRCommand(strInstatDataObject & "$get_column_selection_names")
-                Case "object",
+        If Not bInstatObjectExists Then
+            Exit Sub
+        End If
+
+
+        Select Case strType
+            Case "column"
+                clsGetItems.SetRCommand(strInstatDataObject & If(bColumnsForSingleDataFrame, "$get_variables_metadata_filtered", "$get_column_names"))
+            Case "metadata"
+                clsGetItems.SetRCommand(strInstatDataObject & "$get_metadata_fields")
+            Case "filter"
+                clsGetItems.SetRCommand(strInstatDataObject & "$get_filter_names")
+            Case "column_selection"
+                clsGetItems.SetRCommand(strInstatDataObject & "$get_column_selection_names")
+            Case "object",
                      RObjectTypeLabel.Graph,
                      RObjectTypeLabel.Model,
                      RObjectTypeLabel.Table,
                      RObjectTypeLabel.Summary,
                      RObjectTypeLabel.StructureLabel
-                    clsGetItems.SetRCommand(strInstatDataObject & "$get_object_names")
-                    If strType <> "object" Then
-                        clsGetItems.AddParameter(strParameterName:="object_type_label",
+                clsGetItems.SetRCommand(strInstatDataObject & "$get_object_names")
+                If strType <> "object" Then
+                    clsGetItems.AddParameter(strParameterName:="object_type_label",
                                           strParameterValue:=Chr(34) & strType & Chr(34))
-                    End If
-                Case "dataframe"
-                    clsGetItems.SetRCommand(strInstatDataObject & "$get_data_names")
-                Case "link"
-                    clsGetItems.SetRCommand(strInstatDataObject & "$get_link_names")
-                Case "key"
-                    clsGetItems.SetRCommand(strInstatDataObject & "$get_key_names")
-                Case "database_variables"
-                    clsGetItems.SetRCommand(strInstatDataObject & "$get_database_variable_names")
-                    clsGetItems.AddParameter("query", Chr(34) & strDatabaseQuery & Chr(34))
-                Case "nc_dim_variables"
-                    clsGetItems.SetRCommand(strInstatDataObject & "$get_nc_variable_names")
-                    clsGetItems.AddParameter("file", Chr(34) & strNcFilePath & Chr(34))
-                Case "variable_sets"
-                    clsGetItems.SetRCommand(strInstatDataObject & "$get_variable_sets_names")
-                Case "calculation"
-                    clsGetItems.SetRCommand(strInstatDataObject & "$get_calculation_names")
-            End Select
-            clsGetItems.AddParameter("as_list", "TRUE")
-            If lstView.TopItem IsNot Nothing Then
-                strTopItemText = lstView.TopItem.Text
-            End If
-            lstView.Clear()
-            lstView.Groups.Clear()
-            lstView.Columns.Add(strHeading)
-            If lstIncludedDataTypes.Count > 0 Then
-                clsIncludeList.SetRCommand("list")
-                For Each kvpInclude In lstIncludedDataTypes
-                    clsIncludeList.AddParameter(kvpInclude.Key, GetListAsRString(kvpInclude.Value.ToList(), bWithQuotes:=False))
-                Next
-                clsGetItems.AddParameter("include", clsRFunctionParameter:=clsIncludeList)
-            End If
-            If lstExcludedDataTypes.Count > 0 Then
-                clsExcludeList.SetRCommand("list")
-                For Each kvpExclude In lstExcludedDataTypes
-                    clsExcludeList.AddParameter(kvpExclude.Key, GetListAsRString(kvpExclude.Value.ToList(), bWithQuotes:=False))
-                Next
-                clsGetItems.AddParameter("exclude", clsRFunctionParameter:=clsExcludeList)
-            End If
-            If strDataFrameName <> "" Then
-                clsGetItems.AddParameter("data_name", Chr(34) & strDataFrameName & Chr(34))
-            End If
-            If strExcludedItems IsNot Nothing AndAlso strExcludedItems.Count > 0 Then
-                clsGetItems.AddParameter("excluded_items", GetListAsRString(strExcludedItems.ToList()))
-            End If
-            expItems = RunInternalScriptGetValue(clsGetItems.ToScript(), bSilent:=True)
-            If expItems IsNot Nothing AndAlso Not expItems.Type = Internals.SymbolicExpressionType.Null Then
-                vecColumns = expItems.AsList
-                For i = 0 To vecColumns.Count - 1
-                    If vecColumns.Count > 1 Then
-                        grps = New ListViewGroup(key:=vecColumns.Names(i), headerText:=vecColumns.Names(i))
-                        lstView.Groups.Add(grps)
-                    End If
-                    chrCurrColumns = vecColumns(i).AsCharacter
-                    If chrCurrColumns IsNot Nothing Then
+                End If
+            Case "dataframe"
+                clsGetItems.SetRCommand(strInstatDataObject & "$get_data_names")
+            Case "link"
+                clsGetItems.SetRCommand(strInstatDataObject & "$get_link_names")
+            Case "key"
+                clsGetItems.SetRCommand(strInstatDataObject & "$get_key_names")
+            Case "database_variables"
+                clsGetItems.SetRCommand(strInstatDataObject & "$get_database_variable_names")
+                clsGetItems.AddParameter("query", Chr(34) & strDatabaseQuery & Chr(34))
+            Case "nc_dim_variables"
+                clsGetItems.SetRCommand(strInstatDataObject & "$get_nc_variable_names")
+                clsGetItems.AddParameter("file", Chr(34) & strNcFilePath & Chr(34))
+            Case "variable_sets"
+                clsGetItems.SetRCommand(strInstatDataObject & "$get_variable_sets_names")
+            Case "calculation"
+                clsGetItems.SetRCommand(strInstatDataObject & "$get_calculation_names")
+        End Select
+
+        If lstView.TopItem IsNot Nothing Then
+            strTopItemText = lstView.TopItem.Text
+        End If
+        lstView.Clear()
+        lstView.Groups.Clear()
+        lstView.Columns.Add(strHeading)
+        If lstIncludedDataTypes.Count > 0 Then
+            clsIncludeList.SetRCommand("list")
+            For Each kvpInclude In lstIncludedDataTypes
+                clsIncludeList.AddParameter(kvpInclude.Key, GetListAsRString(kvpInclude.Value.ToList(), bWithQuotes:=False))
+            Next
+            clsGetItems.AddParameter("include", clsRFunctionParameter:=clsIncludeList)
+        End If
+        If lstExcludedDataTypes.Count > 0 Then
+            clsExcludeList.SetRCommand("list")
+            For Each kvpExclude In lstExcludedDataTypes
+                clsExcludeList.AddParameter(kvpExclude.Key, GetListAsRString(kvpExclude.Value.ToList(), bWithQuotes:=False))
+            Next
+            clsGetItems.AddParameter("exclude", clsRFunctionParameter:=clsExcludeList)
+        End If
+        If strDataFrameName <> "" Then
+            clsGetItems.AddParameter("data_name", Chr(34) & strDataFrameName & Chr(34))
+        End If
+        If strExcludedItems IsNot Nothing AndAlso strExcludedItems.Count > 0 Then
+            clsGetItems.AddParameter("excluded_items", GetListAsRString(strExcludedItems.ToList()))
+        End If
+
+        clsGetItems.AddParameter("as_list", If(bColumnsForSingleDataFrame, "FALSE", "TRUE"))
+        expItems = RunInternalScriptGetValue(clsGetItems.ToScript(), bSilent:=True)
+        If expItems Is Nothing OrElse expItems.Type = Internals.SymbolicExpressionType.Null Then
+            Exit Sub
+        End If
+
+        If bColumnsForSingleDataFrame Then
+            Dim clsDataFramecolumns As DataFrame = expItems.AsDataFrame
+            grps = New ListViewGroup(key:=strDataFrameName, headerText:=strDataFrameName)
+            For rowIndex As Integer = 0 To clsDataFramecolumns.RowCount - 1
+                Dim listViewItem As New ListViewItem With {
+                .Name = clsDataFramecolumns(rowIndex, 0), 'Name
+                .Text = clsDataFramecolumns(rowIndex, 0), 'Name
+                .ToolTipText = clsDataFramecolumns(rowIndex, 1) & Environment.NewLine & clsDataFramecolumns(rowIndex, 2), 'label & class
+                .Tag = strDataFrameName,
+                .Group = grps
+            }
+                lstView.Items.Add(listViewItem)
+            Next
+        Else
+
+            vecColumns = expItems.AsList
+            For i As Integer = 0 To vecColumns.Count - 1
+                If vecColumns.Count > 1 Then
+                    grps = New ListViewGroup(key:=vecColumns.Names(i), headerText:=vecColumns.Names(i))
+                    lstView.Groups.Add(grps)
+                End If
+                chrCurrColumns = vecColumns(i).AsCharacter
+                If chrCurrColumns IsNot Nothing Then
+                    For j As Integer = 0 To chrCurrColumns.Count - 1
+                        lstView.Items.Add(chrCurrColumns(j))
+                        lstView.Items(j).Tag = vecColumns.Names(i)
+                        lstView.Items(j).ToolTipText = chrCurrColumns(j)
+                        If vecColumns.Count > 1 Then
+                            lstView.Items(j).Group = lstView.Groups(i)
+                        End If
+                    Next
+                    If strType = "column" Then
+                        strColumnsRList = GetListAsRString(chrCurrColumns.ToList)
+                        clsGetColumnTypes.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_column_data_types")
+                        clsGetColumnTypes.AddParameter("data_name", Chr(34) & vecColumns.Names(i) & Chr(34))
+                        clsGetColumnTypes.AddParameter("columns", strColumnsRList)
+                        expItems = RunInternalScriptGetValue(clsGetColumnTypes.ToScript(), bSilent:=True)
+                        If expItems IsNot Nothing AndAlso Not expItems.Type = Internals.SymbolicExpressionType.Null Then
+                            strCurrColumnTypes = expItems.AsCharacter.ToArray
+                        Else
+                            strCurrColumnTypes = New String(chrCurrColumns.Count - 1) {}
+                        End If
+                        clsGetColumnLabels.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_column_labels")
+                        clsGetColumnLabels.AddParameter("data_name", Chr(34) & vecColumns.Names(i) & Chr(34))
+                        clsGetColumnLabels.AddParameter("columns", strColumnsRList)
+                        expItems = frmMain.clsRLink.RunInternalScriptGetValue(clsGetColumnLabels.ToScript())
+                        If expItems IsNot Nothing AndAlso Not expItems.Type = Internals.SymbolicExpressionType.Null Then
+                            strCurrColumnLables = expItems.AsCharacter.ToArray
+                        Else
+                            strCurrColumnLables = New String(chrCurrColumns.Count - 1) {}
+                        End If
                         For j = 0 To chrCurrColumns.Count - 1
-                            lstView.Items.Add(chrCurrColumns(j))
-                            lstView.Items(j).Tag = vecColumns.Names(i)
-                            lstView.Items(j).ToolTipText = chrCurrColumns(j)
-                            If vecColumns.Count > 1 Then
-                                lstView.Items(j).Group = lstView.Groups(i)
+                            strTemp = strCurrColumnLables(j)
+                            If strCurrColumnLables(j) <> "" Then
+                                lstView.Items(j).ToolTipText = lstView.Items(j).ToolTipText & vbNewLine & strTemp
+                            End If
+                            strTemp = strCurrColumnTypes(j)
+                            If strTemp <> "" Then
+                                lstView.Items(j).ToolTipText = lstView.Items(j).ToolTipText & vbNewLine & strTemp
                             End If
                         Next
-                        If strType = "column" Then
-                            strColumnsRList = GetListAsRString(chrCurrColumns.ToList)
-                            clsGetColumnTypes.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_column_data_types")
-                            clsGetColumnTypes.AddParameter("data_name", Chr(34) & vecColumns.Names(i) & Chr(34))
-                            clsGetColumnTypes.AddParameter("columns", strColumnsRList)
-                            expItems = RunInternalScriptGetValue(clsGetColumnTypes.ToScript(), bSilent:=True)
-                            If expItems IsNot Nothing AndAlso Not expItems.Type = Internals.SymbolicExpressionType.Null Then
-                                strCurrColumnTypes = expItems.AsCharacter.ToArray
-                            Else
-                                strCurrColumnTypes = New String(chrCurrColumns.Count - 1) {}
-                            End If
-                            clsGetColumnLabels.SetRCommand(frmMain.clsRLink.strInstatDataObject & "$get_column_labels")
-                            clsGetColumnLabels.AddParameter("data_name", Chr(34) & vecColumns.Names(i) & Chr(34))
-                            clsGetColumnLabels.AddParameter("columns", strColumnsRList)
-                            expItems = frmMain.clsRLink.RunInternalScriptGetValue(clsGetColumnLabels.ToScript())
-                            If expItems IsNot Nothing AndAlso Not expItems.Type = Internals.SymbolicExpressionType.Null Then
-                                strCurrColumnLables = expItems.AsCharacter.ToArray
-                            Else
-                                strCurrColumnLables = New String(chrCurrColumns.Count - 1) {}
-                            End If
-                            For j = 0 To chrCurrColumns.Count - 1
-                                strTemp = strCurrColumnLables(j)
-                                If strCurrColumnLables(j) <> "" Then
-                                    lstView.Items(j).ToolTipText = lstView.Items(j).ToolTipText & vbNewLine & strTemp
-                                End If
-                                strTemp = strCurrColumnTypes(j)
-                                If strTemp <> "" Then
-                                    lstView.Items(j).ToolTipText = lstView.Items(j).ToolTipText & vbNewLine & strTemp
-                                End If
-                            Next
-                        End If
-                    End If
-                Next
-                lstView.Columns(0).Width = -2
-                ' When there is a vertical scroll bar, Width = -2 makes it slightly wider than needed
-                ' causing the horizontal scroll bar to display even when not needed.
-                ' Reducing the Width by ~ 2 removes the horizontal scroll bar when it's not needed 
-                ' and doesn't affect the visibility of the longest item
-                ' This has been tested on high resolution screens but needs further testing
-                ' and possibly a better solution.
-                lstView.Columns(0).Width = lstView.Columns(0).Width - 2
-                If strTopItemText <> "" Then
-                    lviTemp = lstView.FindItemWithText(strTopItemText)
-                    If lviTemp IsNot Nothing Then
-                        lstView.TopItem = lviTemp
                     End If
                 End If
+            Next
+        End If
+
+        lstView.Columns(0).Width = -2
+        ' When there is a vertical scroll bar, Width = -2 makes it slightly wider than needed
+        ' causing the horizontal scroll bar to display even when not needed.
+        ' Reducing the Width by ~ 2 removes the horizontal scroll bar when it's not needed 
+        ' and doesn't affect the visibility of the longest item
+        ' This has been tested on high resolution screens but needs further testing
+        ' and possibly a better solution.
+        lstView.Columns(0).Width = lstView.Columns(0).Width - 2
+        If strTopItemText <> "" Then
+            lviTemp = lstView.FindItemWithText(strTopItemText)
+            If lviTemp IsNot Nothing Then
+                lstView.TopItem = lviTemp
             End If
         End If
+
     End Sub
 
     '''--------------------------------------------------------------------------------------------

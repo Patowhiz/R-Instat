@@ -1621,6 +1621,59 @@ DataSheet$set("public", "get_column_names", function(as_list = FALSE, include = 
 }
 )
 
+DataSheet$set("public", "get_variables_metadata_filtered", function(as_list = FALSE, include = list(), exclude = list(), excluded_items = c(), max_no, use_current_column_selection = TRUE) {
+  
+  #todo. re factor this block of code in a way that it just uses the get_variables_metadata in an efficient way
+  #---------------------------------
+  if(length(include) == 0 && length(exclude) == 0 && (!use_current_column_selection || !self$column_selection_applied())) out <- names(private$data)
+  else {
+    if(data_type_label %in% names(include) && "numeric" %in% include[[data_type_label]]) {
+      include[[data_type_label]] = c(include[[data_type_label]], "integer")
+    }
+    if(data_type_label %in% names(exclude) && "numeric" %in% exclude[[data_type_label]]) {
+      exclude[[data_type_label]] = c(exclude[[data_type_label]], "integer")
+    }
+    
+    if (use_current_column_selection) col_names <- self$current_column_selection
+    else col_names <- names(private$data)
+    out <- c()
+    i <- 1
+    for(col in col_names) {
+      curr_var_metadata <- self$get_variables_metadata(column = col, direct_from_attributes = TRUE)
+      
+      if(length(include) > 0 || length(exclude) > 0) {
+      
+        if(!data_type_label %in% names(curr_var_metadata)) curr_var_metadata[[data_type_label]] <- class(private$data[[col]])
+        #TODO this is a temp compatibility solution for how the class of ordered factor used to be shown when getting metadata
+        if(length(curr_var_metadata[[data_type_label]]) == 2 && all(curr_var_metadata[[data_type_label]] %in% c("ordered", "factor"))) curr_var_metadata[[data_type_label]] <- "ordered,factor"
+        if(all(c(names(include), names(exclude)) %in% names(curr_var_metadata)) && all(sapply(names(include), function(prop) any(curr_var_metadata[[prop]] %in% include[[prop]])))
+           && all(sapply(names(exclude), function(prop) !any(curr_var_metadata[[prop]] %in% exclude[[prop]])))) {
+          out <- c(out, col)
+        }
+      }
+      else out <- c(out, col)
+      i = i + 1
+    }
+    if(!missing(max_no) && max_no < length(out)) out <- out[1:max_no]
+  }
+  if(length(excluded_items) > 0) {
+    ex_ind = which(out %in% excluded_items)
+    if(length(ex_ind) != length(excluded_items)) warning("Some of the excluded_items were not found in the data")
+    if(length(ex_ind) > 0) out = out[-ex_ind]
+  }
+  #---------------------------------
+  
+  
+  out <- self$get_variables_metadata(column = out,  convert_to_character = TRUE)
+  if(as_list) {
+    lst = list()
+    lst[[self$get_metadata(data_name_label)]] <- out
+    return(lst)
+  }
+  else return(out)
+}
+)
+
 #TODO: Are there other types needed here?
 DataSheet$set("public", "get_data_type", function(col_name = "") {
   if(!(col_name %in% self$get_column_names())) {
