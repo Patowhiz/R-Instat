@@ -284,6 +284,12 @@
     <Compile Include="sdgSummaryThemes.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="ucrObjectTypeSelector.Designer.vb">
+      <DependentUpon>ucrObjectTypeSelector.vb</DependentUpon>
+    </Compile>
+    <Compile Include="ucrObjectTypeSelector.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="UserControls\frmMaximiseOutput.Designer.vb">
       <DependentUpon>frmMaximiseOutput.vb</DependentUpon>
     </Compile>
@@ -3110,6 +3116,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="sdgSummaryThemes.resx">
       <DependentUpon>sdgSummaryThemes.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ucrObjectTypeSelector.resx">
+      <DependentUpon>ucrObjectTypeSelector.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserControls\frmMaximiseOutput.resx">
       <DependentUpon>frmMaximiseOutput.vb</DependentUpon>
