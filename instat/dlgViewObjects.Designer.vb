@@ -48,6 +48,7 @@ Partial Class dlgViewObjects
         Me.ucrBase = New instat.ucrButtons()
         Me.ucrPnlContentsToView = New instat.UcrPanel()
         Me.ucrCboObjectType = New instat.ucrObjectTypeSelector()
+        Me.lblObjectType = New System.Windows.Forms.Label()
         Me.SuspendLayout()
         '
         'lblSelectedObject
@@ -56,9 +57,9 @@ Partial Class dlgViewObjects
         Me.lblSelectedObject.Location = New System.Drawing.Point(375, 114)
         Me.lblSelectedObject.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.lblSelectedObject.Name = "lblSelectedObject"
-        Me.lblSelectedObject.Size = New System.Drawing.Size(119, 20)
+        Me.lblSelectedObject.Size = New System.Drawing.Size(89, 30)
         Me.lblSelectedObject.TabIndex = 1
-        Me.lblSelectedObject.Text = "Object To View:"
+        Me.lblSelectedObject.Text = "Object:"
         '
         'rdoStructure
         '
@@ -157,12 +158,22 @@ Partial Class dlgViewObjects
         '
         'ucrCboObjectType
         '
-        Me.ucrCboObjectType.AutoSize = True
-        Me.ucrCboObjectType.Location = New System.Drawing.Point(379, 32)
+        Me.ucrCboObjectType.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.ucrCboObjectType.Location = New System.Drawing.Point(379, 67)
         Me.ucrCboObjectType.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.ucrCboObjectType.Name = "ucrCboObjectType"
-        Me.ucrCboObjectType.Size = New System.Drawing.Size(202, 61)
-        Me.ucrCboObjectType.TabIndex = 11
+        Me.ucrCboObjectType.Size = New System.Drawing.Size(202, 28)
+        Me.ucrCboObjectType.TabIndex = 9
+        '
+        'lblObjectType
+        '
+        Me.lblObjectType.AutoSize = True
+        Me.lblObjectType.Location = New System.Drawing.Point(380, 43)
+        Me.lblObjectType.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
+        Me.lblObjectType.Name = "lblObjectType"
+        Me.lblObjectType.Size = New System.Drawing.Size(71, 30)
+        Me.lblObjectType.TabIndex = 10
+        Me.lblObjectType.Text = "Type:"
         '
         'dlgViewObjects
         '
@@ -170,6 +181,7 @@ Partial Class dlgViewObjects
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.AutoSize = True
         Me.ClientSize = New System.Drawing.Size(624, 416)
+        Me.Controls.Add(Me.lblObjectType)
         Me.Controls.Add(Me.ucrCboObjectType)
         Me.Controls.Add(Me.rdoPrint)
         Me.Controls.Add(Me.rdoComponent)
@@ -202,5 +214,6 @@ Partial Class dlgViewObjects
     Friend WithEvents rdoComponent As RadioButton
     Friend WithEvents rdoPrint As RadioButton
     Friend WithEvents ucrPnlContentsToView As UcrPanel
+    Friend WithEvents lblObjectType As Label
     Friend WithEvents ucrCboObjectType As ucrObjectTypeSelector
 End Class

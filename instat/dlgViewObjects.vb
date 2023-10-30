@@ -96,10 +96,6 @@ Public Class dlgViewObjects
     End Sub
 
     Private Sub ucrCboObjectType_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrCboObjectType.ControlValueChanged
-        'Checks whether the item in the receiver is contained in the selector. I.e when a selected object is renamed, the receiver clears.
-        'If Not ucrReceiverSelectedObject.IsEmpty AndAlso ucrSelectorForViewObject.lstAvailableVariable.FindItemWithText(ucrReceiverSelectedObject.GetVariableNames(False), True, 0, False) Is Nothing Then
-        '    ucrReceiverSelectedObject.SetText("")
-        'End If
         ucrReceiverSelectedObject.Clear()
         ucrReceiverSelectedObject.strSelectorHeading = ucrCboObjectType.GetSelectedText()
         ucrReceiverSelectedObject.SetItemType(ucrCboObjectType.GetSelectedValue())

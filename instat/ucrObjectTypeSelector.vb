@@ -3,9 +3,6 @@ Imports System.Windows.Forms.VisualStyles.VisualStyleElement
 
 Public Class ucrObjectTypeSelector
 
-
-
-
     Public Sub New()
 
         ' This call is required by the designer.
@@ -29,7 +26,6 @@ Public Class ucrObjectTypeSelector
         cboObjectType.SelectedIndex = 0
     End Sub
 
-
     Private Sub cboObjectType_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboObjectType.SelectedIndexChanged
         OnControlContentsChanged()
         OnControlValueChanged()
@@ -46,6 +42,5 @@ Public Class ucrObjectTypeSelector
     Public Sub SetSelectedIndex(index As Integer)
         cboObjectType.SelectedIndex = index
     End Sub
-
 
 End Class
