@@ -159,7 +159,7 @@ Partial Class dlgViewObjects
         Me.rdoOutputObjects.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.ActiveCaption
         Me.rdoOutputObjects.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.rdoOutputObjects.ImeMode = System.Windows.Forms.ImeMode.NoControl
-        Me.rdoOutputObjects.Location = New System.Drawing.Point(146, 10)
+        Me.rdoOutputObjects.Location = New System.Drawing.Point(143, 10)
         Me.rdoOutputObjects.Margin = New System.Windows.Forms.Padding(4)
         Me.rdoOutputObjects.Name = "rdoOutputObjects"
         Me.rdoOutputObjects.Size = New System.Drawing.Size(180, 42)
@@ -179,7 +179,7 @@ Partial Class dlgViewObjects
         Me.rdoDataObjects.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.ActiveCaption
         Me.rdoDataObjects.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.rdoDataObjects.ImeMode = System.Windows.Forms.ImeMode.NoControl
-        Me.rdoDataObjects.Location = New System.Drawing.Point(325, 10)
+        Me.rdoDataObjects.Location = New System.Drawing.Point(322, 10)
         Me.rdoDataObjects.Margin = New System.Windows.Forms.Padding(4)
         Me.rdoDataObjects.Name = "rdoDataObjects"
         Me.rdoDataObjects.Size = New System.Drawing.Size(180, 42)
