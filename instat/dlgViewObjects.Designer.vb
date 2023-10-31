@@ -40,8 +40,6 @@ Partial Class dlgViewObjects
     Private Sub InitializeComponent()
         Me.lblSelectedObject = New System.Windows.Forms.Label()
         Me.rdoStructure = New System.Windows.Forms.RadioButton()
-        Me.rdoAllContents = New System.Windows.Forms.RadioButton()
-        Me.rdoComponent = New System.Windows.Forms.RadioButton()
         Me.rdoPrint = New System.Windows.Forms.RadioButton()
         Me.ucrReceiverSelectedObject = New instat.ucrReceiverSingle()
         Me.ucrSelectorObjects = New instat.ucrSelectorByDataFrameAddRemove()
@@ -49,22 +47,25 @@ Partial Class dlgViewObjects
         Me.ucrPnlContentsToView = New instat.UcrPanel()
         Me.ucrCboObjectType = New instat.ucrObjectTypeSelector()
         Me.lblObjectType = New System.Windows.Forms.Label()
+        Me.rdoOutputObjects = New System.Windows.Forms.RadioButton()
+        Me.rdoDataObjects = New System.Windows.Forms.RadioButton()
+        Me.ucrPnlOptions = New instat.UcrPanel()
         Me.SuspendLayout()
         '
         'lblSelectedObject
         '
         Me.lblSelectedObject.AutoSize = True
-        Me.lblSelectedObject.Location = New System.Drawing.Point(375, 114)
+        Me.lblSelectedObject.Location = New System.Drawing.Point(369, 169)
         Me.lblSelectedObject.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.lblSelectedObject.Name = "lblSelectedObject"
-        Me.lblSelectedObject.Size = New System.Drawing.Size(89, 30)
+        Me.lblSelectedObject.Size = New System.Drawing.Size(59, 20)
         Me.lblSelectedObject.TabIndex = 1
         Me.lblSelectedObject.Text = "Object:"
         '
         'rdoStructure
         '
         Me.rdoStructure.AutoSize = True
-        Me.rdoStructure.Location = New System.Drawing.Point(384, 216)
+        Me.rdoStructure.Location = New System.Drawing.Point(378, 271)
         Me.rdoStructure.Margin = New System.Windows.Forms.Padding(4)
         Me.rdoStructure.Name = "rdoStructure"
         Me.rdoStructure.Size = New System.Drawing.Size(100, 24)
@@ -74,36 +75,10 @@ Partial Class dlgViewObjects
         Me.rdoStructure.Text = "Structure"
         Me.rdoStructure.UseVisualStyleBackColor = True
         '
-        'rdoAllContents
-        '
-        Me.rdoAllContents.AutoSize = True
-        Me.rdoAllContents.Location = New System.Drawing.Point(384, 249)
-        Me.rdoAllContents.Margin = New System.Windows.Forms.Padding(4)
-        Me.rdoAllContents.Name = "rdoAllContents"
-        Me.rdoAllContents.Size = New System.Drawing.Size(120, 24)
-        Me.rdoAllContents.TabIndex = 6
-        Me.rdoAllContents.TabStop = True
-        Me.rdoAllContents.Tag = "All_Contents"
-        Me.rdoAllContents.Text = "All Contents"
-        Me.rdoAllContents.UseVisualStyleBackColor = True
-        '
-        'rdoComponent
-        '
-        Me.rdoComponent.AutoSize = True
-        Me.rdoComponent.Location = New System.Drawing.Point(384, 282)
-        Me.rdoComponent.Margin = New System.Windows.Forms.Padding(4)
-        Me.rdoComponent.Name = "rdoComponent"
-        Me.rdoComponent.Size = New System.Drawing.Size(117, 24)
-        Me.rdoComponent.TabIndex = 7
-        Me.rdoComponent.TabStop = True
-        Me.rdoComponent.Tag = "Component"
-        Me.rdoComponent.Text = "Component"
-        Me.rdoComponent.UseVisualStyleBackColor = True
-        '
         'rdoPrint
         '
         Me.rdoPrint.AutoSize = True
-        Me.rdoPrint.Location = New System.Drawing.Point(384, 183)
+        Me.rdoPrint.Location = New System.Drawing.Point(378, 238)
         Me.rdoPrint.Margin = New System.Windows.Forms.Padding(4)
         Me.rdoPrint.Name = "rdoPrint"
         Me.rdoPrint.Size = New System.Drawing.Size(66, 24)
@@ -116,7 +91,7 @@ Partial Class dlgViewObjects
         '
         Me.ucrReceiverSelectedObject.AutoSize = True
         Me.ucrReceiverSelectedObject.frmParent = Me
-        Me.ucrReceiverSelectedObject.Location = New System.Drawing.Point(375, 136)
+        Me.ucrReceiverSelectedObject.Location = New System.Drawing.Point(369, 191)
         Me.ucrReceiverSelectedObject.Margin = New System.Windows.Forms.Padding(0)
         Me.ucrReceiverSelectedObject.Name = "ucrReceiverSelectedObject"
         Me.ucrReceiverSelectedObject.Selector = Nothing
@@ -131,7 +106,7 @@ Partial Class dlgViewObjects
         Me.ucrSelectorObjects.bDropUnusedFilterLevels = False
         Me.ucrSelectorObjects.bShowHiddenColumns = False
         Me.ucrSelectorObjects.bUseCurrentFilter = True
-        Me.ucrSelectorObjects.Location = New System.Drawing.Point(15, 15)
+        Me.ucrSelectorObjects.Location = New System.Drawing.Point(9, 70)
         Me.ucrSelectorObjects.Margin = New System.Windows.Forms.Padding(0)
         Me.ucrSelectorObjects.Name = "ucrSelectorObjects"
         Me.ucrSelectorObjects.Size = New System.Drawing.Size(320, 274)
@@ -141,7 +116,7 @@ Partial Class dlgViewObjects
         '
         Me.ucrBase.AutoSize = True
         Me.ucrBase.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.ucrBase.Location = New System.Drawing.Point(12, 333)
+        Me.ucrBase.Location = New System.Drawing.Point(6, 388)
         Me.ucrBase.Margin = New System.Windows.Forms.Padding(6, 8, 6, 8)
         Me.ucrBase.Name = "ucrBase"
         Me.ucrBase.Size = New System.Drawing.Size(611, 77)
@@ -150,16 +125,16 @@ Partial Class dlgViewObjects
         'ucrPnlContentsToView
         '
         Me.ucrPnlContentsToView.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.ucrPnlContentsToView.Location = New System.Drawing.Point(375, 172)
+        Me.ucrPnlContentsToView.Location = New System.Drawing.Point(369, 227)
         Me.ucrPnlContentsToView.Margin = New System.Windows.Forms.Padding(9, 12, 9, 12)
         Me.ucrPnlContentsToView.Name = "ucrPnlContentsToView"
-        Me.ucrPnlContentsToView.Size = New System.Drawing.Size(180, 147)
+        Me.ucrPnlContentsToView.Size = New System.Drawing.Size(180, 96)
         Me.ucrPnlContentsToView.TabIndex = 3
         '
         'ucrCboObjectType
         '
         Me.ucrCboObjectType.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.ucrCboObjectType.Location = New System.Drawing.Point(379, 67)
+        Me.ucrCboObjectType.Location = New System.Drawing.Point(373, 122)
         Me.ucrCboObjectType.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.ucrCboObjectType.Name = "ucrCboObjectType"
         Me.ucrCboObjectType.Size = New System.Drawing.Size(202, 28)
@@ -168,24 +143,74 @@ Partial Class dlgViewObjects
         'lblObjectType
         '
         Me.lblObjectType.AutoSize = True
-        Me.lblObjectType.Location = New System.Drawing.Point(380, 43)
+        Me.lblObjectType.Location = New System.Drawing.Point(374, 98)
         Me.lblObjectType.Margin = New System.Windows.Forms.Padding(4, 0, 4, 0)
         Me.lblObjectType.Name = "lblObjectType"
-        Me.lblObjectType.Size = New System.Drawing.Size(71, 30)
+        Me.lblObjectType.Size = New System.Drawing.Size(47, 20)
         Me.lblObjectType.TabIndex = 10
         Me.lblObjectType.Text = "Type:"
+        '
+        'rdoOutputObjects
+        '
+        Me.rdoOutputObjects.Appearance = System.Windows.Forms.Appearance.Button
+        Me.rdoOutputObjects.BackColor = System.Drawing.SystemColors.Control
+        Me.rdoOutputObjects.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption
+        Me.rdoOutputObjects.FlatAppearance.BorderSize = 2
+        Me.rdoOutputObjects.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.ActiveCaption
+        Me.rdoOutputObjects.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.rdoOutputObjects.ImeMode = System.Windows.Forms.ImeMode.NoControl
+        Me.rdoOutputObjects.Location = New System.Drawing.Point(146, 10)
+        Me.rdoOutputObjects.Margin = New System.Windows.Forms.Padding(4)
+        Me.rdoOutputObjects.Name = "rdoOutputObjects"
+        Me.rdoOutputObjects.Size = New System.Drawing.Size(180, 42)
+        Me.rdoOutputObjects.TabIndex = 12
+        Me.rdoOutputObjects.TabStop = True
+        Me.rdoOutputObjects.Tag = ""
+        Me.rdoOutputObjects.Text = "Output Objects"
+        Me.rdoOutputObjects.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.rdoOutputObjects.UseVisualStyleBackColor = False
+        '
+        'rdoDataObjects
+        '
+        Me.rdoDataObjects.Appearance = System.Windows.Forms.Appearance.Button
+        Me.rdoDataObjects.BackColor = System.Drawing.SystemColors.Control
+        Me.rdoDataObjects.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveCaption
+        Me.rdoDataObjects.FlatAppearance.BorderSize = 2
+        Me.rdoDataObjects.FlatAppearance.CheckedBackColor = System.Drawing.SystemColors.ActiveCaption
+        Me.rdoDataObjects.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.rdoDataObjects.ImeMode = System.Windows.Forms.ImeMode.NoControl
+        Me.rdoDataObjects.Location = New System.Drawing.Point(325, 10)
+        Me.rdoDataObjects.Margin = New System.Windows.Forms.Padding(4)
+        Me.rdoDataObjects.Name = "rdoDataObjects"
+        Me.rdoDataObjects.Size = New System.Drawing.Size(180, 42)
+        Me.rdoDataObjects.TabIndex = 13
+        Me.rdoDataObjects.TabStop = True
+        Me.rdoDataObjects.Tag = ""
+        Me.rdoDataObjects.Text = "Data Objects"
+        Me.rdoDataObjects.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.rdoDataObjects.UseVisualStyleBackColor = False
+        '
+        'ucrPnlOptions
+        '
+        Me.ucrPnlOptions.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.ucrPnlOptions.Location = New System.Drawing.Point(6, 5)
+        Me.ucrPnlOptions.Margin = New System.Windows.Forms.Padding(9)
+        Me.ucrPnlOptions.Name = "ucrPnlOptions"
+        Me.ucrPnlOptions.Size = New System.Drawing.Size(602, 54)
+        Me.ucrPnlOptions.TabIndex = 11
         '
         'dlgViewObjects
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(144.0!, 144.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.AutoSize = True
-        Me.ClientSize = New System.Drawing.Size(624, 416)
+        Me.ClientSize = New System.Drawing.Size(624, 469)
+        Me.Controls.Add(Me.rdoOutputObjects)
+        Me.Controls.Add(Me.rdoDataObjects)
+        Me.Controls.Add(Me.ucrPnlOptions)
         Me.Controls.Add(Me.lblObjectType)
         Me.Controls.Add(Me.ucrCboObjectType)
         Me.Controls.Add(Me.rdoPrint)
-        Me.Controls.Add(Me.rdoComponent)
-        Me.Controls.Add(Me.rdoAllContents)
         Me.Controls.Add(Me.rdoStructure)
         Me.Controls.Add(Me.ucrReceiverSelectedObject)
         Me.Controls.Add(Me.lblSelectedObject)
@@ -210,10 +235,11 @@ Partial Class dlgViewObjects
     Friend WithEvents lblSelectedObject As Label
     Friend WithEvents ucrReceiverSelectedObject As ucrReceiverSingle
     Friend WithEvents rdoStructure As RadioButton
-    Friend WithEvents rdoAllContents As RadioButton
-    Friend WithEvents rdoComponent As RadioButton
     Friend WithEvents rdoPrint As RadioButton
     Friend WithEvents ucrPnlContentsToView As UcrPanel
     Friend WithEvents lblObjectType As Label
     Friend WithEvents ucrCboObjectType As ucrObjectTypeSelector
+    Friend WithEvents rdoOutputObjects As RadioButton
+    Friend WithEvents rdoDataObjects As RadioButton
+    Friend WithEvents ucrPnlOptions As UcrPanel
 End Class

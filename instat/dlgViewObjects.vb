@@ -40,10 +40,17 @@ Public Class dlgViewObjects
         ucrBase.iHelpTopicID = 349
         'todo. temporary to have the str() output captured as text
         ucrBase.clsRsyntax.iCallType = -1
+
+
+        ucrPnlOptions.AddRadioButton(rdoOutputObjects)
+        'ucrPnlOptions.AddRadioButton(rdoDataObjects)
+        rdoDataObjects.Enabled = False
+
+        ucrPnlOptions.AddFunctionNamesCondition(rdoOutputObjects, {frmMain.clsRLink.strInstatDataObject & "$get_object_data", "str"})
+
         ucrSelectorObjects.SetParameter(New RParameter("data_name", 0))
         ucrSelectorObjects.SetParameterIsString()
 
-        ' ucr receiver
         ucrReceiverSelectedObject.SetParameter(New RParameter("object_name", 1))
         ucrReceiverSelectedObject.Selector = ucrSelectorObjects
         ucrReceiverSelectedObject.SetMeAsReceiver()
@@ -51,16 +58,11 @@ Public Class dlgViewObjects
         ucrReceiverSelectedObject.SetItemType("object")
         ucrReceiverSelectedObject.bAutoFill = True
 
-        'todo. disabling and hiding this for now until they're working correctly.
-        rdoAllContents.Visible = False
-        rdoComponent.Visible = False
-
-        'add radio buttons to the panel rdo's
         ucrPnlContentsToView.AddRadioButton(rdoPrint)
         ucrPnlContentsToView.AddRadioButton(rdoStructure)
 
-        ucrPnlContentsToView.AddParameterValuesCondition(rdoPrint, "check", "print")
-        ucrPnlContentsToView.AddParameterValuesCondition(rdoStructure, "check", "str")
+        ucrPnlContentsToView.AddFunctionNamesCondition(rdoPrint, frmMain.clsRLink.strInstatDataObject & "$get_object_data", bNewIsPositive:=True)
+        ucrPnlContentsToView.AddFunctionNamesCondition(rdoStructure, "str", bNewIsPositive:=True)
 
     End Sub
 
@@ -89,6 +91,8 @@ Public Class dlgViewObjects
         ucrReceiverSelectedObject.AddAdditionalCodeParameterPair(clsStructureRFunction, New RParameter("object", 1))
         ucrSelectorObjects.SetRCode(clsPrintRFunction, bReset)
         ucrReceiverSelectedObject.SetRCode(clsPrintRFunction, bReset)
+
+        ucrPnlOptions.SetRCode(ucrBase.clsRsyntax.clsBaseFunction)
     End Sub
 
     Private Sub TestOKEnabled()
