@@ -52,6 +52,9 @@ Public Class dlgScript
         ucrPnlGetData.AddRadioButton(rdoGetColumn)
         ucrPnlGetData.AddRadioButton(rdoGetObject)
 
+        ucrPnlExample.AddRadioButton(rdoData)
+        ucrPnlExample.AddRadioButton(rdoFunction)
+
         'todo. this combobox can be a custom package control in future. Its also needed in dlgHelpVignettes
         ucrComboGetPackage.SetParameter(New RParameter("package", 0))
         ucrComboGetPackage.SetItems(GetPackages(), bAddConditions:=True)
@@ -147,6 +150,7 @@ Public Class dlgScript
 
         'get controls reset
         rdoGetDataFrame.Checked = True
+        rdoData.Checked = True
         ucrComboGetPackage.Reset()
         ucrComboGetPackages.Reset()
         ucrDataFrameGet.Reset()
@@ -176,7 +180,7 @@ Public Class dlgScript
         clsLibraryExampleFunction.SetRCommand("library")
         clsLibraryExampleFunction.AddParameter("package", Chr(34) & "datasets" & Chr(34))
 
-        clsLibraryExpFunction.SetRCommand("example")
+        clsLibraryExpFunction.SetRCommand("getExample")
 
         clsConstantDummyFunction.AddParameter("preview", "FALSE", iPosition:=0)
         clsConstantDummyFunction.AddParameter("edit", "FALSE", iPosition:=1)
@@ -219,7 +223,7 @@ Public Class dlgScript
         End If
     End Sub
 
-    Private Sub FillListView(dfDataframe As DataFrame)
+    Private Sub FillListViewWithDatasets(dfDataframe As DataFrame)
         Dim lstItem As ListViewItem
 
         lstCollection.Items.Clear()
@@ -233,6 +237,34 @@ Public Class dlgScript
                 End If
             Next
             lstCollection.Select()
+            lstCollection.Columns(0).Text = "Data"
+        End If
+    End Sub
+
+    Private Sub FillListViewWithFunctions(lstFunctions As List(Of String))
+        Dim lstItem As ListViewItem
+        lstCollection.Items.Clear()
+        If lstFunctions IsNot Nothing Then
+            For i As Integer = 0 To lstFunctions.Count - 1
+                lstItem = lstCollection.Items.Add(lstFunctions(i))
+                lstItem.SubItems.Add("")
+            Next
+            lstCollection.Select()
+            lstCollection.Columns(0).Text = "Functions"
+        End If
+    End Sub
+
+    Private Sub LoadFunctions(strPackage As String)
+        Dim expTemp As SymbolicExpression
+        Dim lstFunction As New List(Of String)
+        If strPackage IsNot Nothing Then
+            expTemp = frmMain.clsRLink.RunInternalScriptGetValue("ls(pos = asNamespace(" & Chr(34) & strPackage & Chr(34) & "))", bSilent:=True)
+            If expTemp IsNot Nothing Then
+                For i = 0 To expTemp.AsList.Length - 1
+                    lstFunction.Add(expTemp.AsList.AsCharacter(i))
+                Next
+            End If
+            FillListViewWithFunctions(lstFunction)
         End If
     End Sub
 
@@ -246,7 +278,7 @@ Public Class dlgScript
                 dfPackage = expTemp.AsDataFrame
             End If
         End If
-        FillListView(dfDataframe:=dfPackage)
+        FillListViewWithDatasets(dfDataframe:=dfPackage)
     End Sub
 
     Private Sub ucrPnlGetData_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrPnlGetData.ControlValueChanged, ucrDataFrameGet.ControlValueChanged
@@ -266,39 +298,32 @@ Public Class dlgScript
         End If
     End Sub
 
-    Function ExtractExampleCode(inputLines As CharacterVector) As String
-        Dim exampleCode As New System.Text.StringBuilder()
+    Function RemoveDoubleHashD(strText As String) As String
+        ' Replace all occurrences of "##D" with an empty string
+        Dim result As String = strText.Replace("##D", String.Empty)
 
-        For Each line As String In inputLines
-            If Not String.IsNullOrEmpty(line) Then
-                Dim strTrimmedLine = ""
-                If strSelectedPackage <> "datasets" AndAlso line.Contains("##D") Then
-                    strTrimmedLine = line.Substring(line.IndexOf("##D") + 4).Trim
-                Else
-                    strTrimmedLine = line.Substring(line.IndexOf(" ")).Trim
-                End If
-                exampleCode.AppendLine(strTrimmedLine) ' Append the code
-            End If
-        Next
-
-        ' Remove any leading and trailing whitespace
-        Return exampleCode.ToString().Trim()
+        Return result
     End Function
 
     Private Sub lstCollection_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstCollection.SelectedIndexChanged
+        If lstCollection.SelectedItems.Count > 0 Then
+            Dim strTopic = lstCollection.SelectedItems(0).SubItems(0).Text
+            GetExample(strTopic)
+        End If
+    End Sub
+
+    Private Sub GetExample(strTopic As String)
         Try
-            If lstCollection.SelectedItems.Count > 0 AndAlso TabControl1.SelectedTab Is TabPage6 Then
-                Dim strTopic = lstCollection.SelectedItems(0).SubItems(0).Text
+            If Not String.IsNullOrEmpty(strTopic) Then
                 clsLibraryExpFunction.AddParameter("topic", Chr(34) & strTopic & Chr(34), iPosition:=0)
-                Dim strScript As String = "capture.output(" & clsLibraryExpFunction.ToScript() & ")"
-                If strScript IsNot Nothing Then
-                    Dim strExampe = frmMain.clsRLink.RunInternalScriptGetValue(strScript.Trim, bSilent:=True).AsCharacter
-                    Dim strResult = ExtractExampleCode(strExampe)
-                    ucrInputPreviewLibrary.SetText(If(String.IsNullOrEmpty(strResult), "No Example", strResult))
+                If clsLibraryExpFunction IsNot Nothing Then
+                    Dim strExampe = frmMain.clsRLink.RunInternalScriptGetValue(clsLibraryExpFunction.ToScript(), bSilent:=True).AsCharacter(0)
+                    Dim strResult = RemoveDoubleHashD(strExampe)
+                    ucrInputPreviewLibrary.SetText(strResult)
                 End If
             End If
         Catch ex As Exception
-            MsgBox(ex.Message)
+            MsgBox(strTopic & " has a help file but no examples.")
         End Try
     End Sub
 
@@ -314,21 +339,27 @@ Public Class dlgScript
     Private Sub TabControl1_SelectedIndexChanged(sender As Object, e As EventArgs) Handles TabControl1.SelectedIndexChanged
         Select Case TabControl1.SelectedTab.Name
             Case "TabPage1"
-                SetPackage(ucrComboGetPackage.GetText )
+                SetPackage(ucrComboGetPackage.GetText)
             Case "TabPage2"
                 SetData()
             Case "TabPage3"
                 SetSaveData()
             Case "TabPage4"
-                ucrInputPreviewLibrary.SetText(ucrInputRemoveObject.GetText)
+                RemoveObject()
             Case "TabPage5"
                 Dim strData = ucrInputDataFrame.GetText()
                 SetDataFrameScript(strData)
         End Select
     End Sub
 
+    Private Sub RemoveObject()
+        Dim lstObject As List(Of String) = ucrInputRemoveObject.GetText.Split(","c).Select(Function(s) s.Trim()).ToList()
+        Dim strPreview = "rm(list=" & frmMain.clsRLink.GetListAsRString(lstObject) & ")"
+        ucrInputPreviewLibrary.SetText(strPreview)
+    End Sub
+
     Private Sub ucrInputRemoveObject_ControlContentsChanged(ucrChangedControl As ucrCore) Handles ucrInputRemoveObject.ControlContentsChanged
-        ucrInputPreviewLibrary.SetText(ucrInputRemoveObject.GetText)
+        RemoveObject()
     End Sub
 
     Private Sub btnRemoveObjects_Click(sender As Object, e As EventArgs)
@@ -359,11 +390,7 @@ Public Class dlgScript
     End Sub
 
     Private Sub SetPackage(strPackage As String)
-        If strPackage <> "datasets" Then
-            ucrInputPreviewLibrary.SetText(GetPreviewText(clsLibraryFunction))
-        Else
-            ucrInputPreviewLibrary.txtInput.Clear()
-        End If
+        ucrInputPreviewLibrary.SetText(GetPreviewText(clsLibraryFunction))
     End Sub
 
     Private Sub ucrComboGetPackage_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrComboGetPackage.ControlValueChanged
@@ -390,7 +417,7 @@ Public Class dlgScript
         SetPreviewScript(clsImportNewDataFrame, strData)
     End Sub
 
-    Private Sub ucrComboGetPackages_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrComboGetPackages.ControlValueChanged
+    Private Sub ucrComboGetPackages_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrComboGetPackages.ControlValueChanged, ucrPnlExample.ControlValueChanged
         If strSelectedPackage <> ucrComboGetPackages.GetText() Then
             strSelectedPackage = ucrComboGetPackages.GetText()
             If strSelectedPackage <> "datasets" Then
@@ -398,8 +425,14 @@ Public Class dlgScript
             Else
                 clsLibraryExpFunction.RemoveParameterByName("package")
             End If
-            LoadDatasets(strSelectedPackage)
             TestOkEnabled()
+        End If
+        ucrInputPreviewLibrary.txtInput.Clear()
+
+        If rdoData.Checked Then
+            LoadDatasets(strSelectedPackage)
+        Else
+            LoadFunctions(strSelectedPackage)
         End If
     End Sub
 
@@ -418,11 +451,7 @@ Public Class dlgScript
     End Sub
 
     Private Sub ucrBase_ClickOk(sender As Object, e As EventArgs) Handles ucrBase.ClickOk
-        If TabControl1.SelectedTab Is TabPage4 AndAlso Not String.IsNullOrEmpty(ucrInputRemoveObject.GetText) Then
-            frmMain.RemoveLineToScriptWindow(ucrInputPreviewLibrary.GetText.Split(","))
-        Else
-            frmMain.InsertTextToScriptWindow(iCurrentPos, ucrInputPreviewLibrary.GetText)
-        End If
+        frmMain.InsertTextToScriptWindow(iCurrentPos, ucrInputPreviewLibrary.GetText)
     End Sub
 
     Private Sub ucrInputPreviewLibrary_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrInputPreviewLibrary.ControlContentsChanged
@@ -443,7 +472,7 @@ Public Class dlgScript
         ucrInputPreviewLibrary.SetText(strAssignedScript)
     End Sub
 
-    Private Sub ucrSaveColumn_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrSaveColumn.ControlValueChanged, ucrSaveModel.ControlValueChanged, ucrSaveTable.ControlValueChanged, ucrSaveGraph.ControlValueChanged, ucrPnlSaveData.ControlValueChanged
+    Private Sub ucrSaveColumn_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrSaveColumn.ControlContentsChanged, ucrSaveModel.ControlContentsChanged, ucrSaveTable.ControlContentsChanged, ucrSaveGraph.ControlContentsChanged, ucrPnlSaveData.ControlContentsChanged
         If TabControl1.SelectedTab IsNot TabPage3 Then
             Exit Sub
         End If
@@ -459,53 +488,59 @@ Public Class dlgScript
         ucrSaveModel.SetVisible(False)
         Dim clsTempFunction As New RFunction
         Dim strAssign As String = ""
+        Try
 
-        If rdoSaveDataFrame.Checked Then
-            ucrInputSaveDataFrame.SetVisible(True)
-            Dim strData As String = ucrInputSaveDataFrame.GetText()
-            SetDataFrameScript(strData)
-        Else
-            If rdoSaveColumn.Checked Then
-                ucrDataFrameSave.SetVisible(True)
-                ucrSaveColumn.SetVisible(True)
-                If ucrSaveColumn.IsComplete AndAlso Not String.IsNullOrEmpty(ucrSaveColumn.GetText) Then
-                    clsTempFunction = clsSaveColumnFunction
-                    strAssign = ucrSaveColumn.GetText
-                End If
-            ElseIf rdoSaveObject.Checked Then
-                ucrDataFrameSave.SetVisible(True)
-                ucrSaveGraph.SetVisible(True)
-                ucrSaveTable.SetVisible(True)
-                ucrSaveModel.SetVisible(True)
-                If ucrSaveGraph.IsComplete AndAlso Not String.IsNullOrEmpty(ucrSaveGraph.GetText) Then
-                    clsTempFunction = clsSaveGraphFunction
-                    strAssign = ucrSaveGraph.GetText
-                    ucrSaveModel.ucrInputComboSave.SetText("")
-                    ucrSaveTable.ucrInputComboSave.SetText("")
-                ElseIf ucrSaveModel.IsComplete AndAlso Not String.IsNullOrEmpty(ucrSaveModel.GetText) Then
-                    clsTempFunction = clsSaveModelFunction
-                    strAssign = ucrSaveModel.GetText
-                    ucrSaveGraph.ucrInputComboSave.SetText("")
-                    ucrSaveTable.ucrInputComboSave.SetText("")
-                ElseIf ucrSaveTable.IsComplete AndAlso Not String.IsNullOrEmpty(ucrSaveTable.GetText) Then
-                    clsTempFunction = clsSaveTableFunction
-                    strAssign = ucrSaveTable.GetText
-                    ucrSaveGraph.ucrInputComboSave.SetText("")
-                    ucrSaveModel.ucrInputComboSave.SetText("")
-                End If
-            End If
-            If clsTempFunction IsNot Nothing AndAlso Not String.IsNullOrEmpty(strAssign) Then
-                Dim strAssignedScript As String = ""
-                'clone the function first because the ToScript function modifies the contents of the function.
-                Dim strAssignedTo As String = clsTempFunction.Clone.ToScript(strScript:=strAssignedScript)
-                Dim strScript = strAssign & " <- " & strAssignedTo
-                strScript = strScript.Trim & Environment.NewLine & strAssignedScript.Split(vbCrLf)(1).Trim
-                ucrInputPreviewLibrary.SetText(strScript)
-                AddAssignToString(strAssignedTo)
+            If rdoSaveDataFrame.Checked Then
+                ucrInputSaveDataFrame.SetVisible(True)
+                Dim strData As String = ucrInputSaveDataFrame.GetText()
+                SetDataFrameScript(strData)
             Else
-                ucrInputPreviewLibrary.txtInput.Clear()
+                If rdoSaveColumn.Checked Then
+                    ucrDataFrameSave.SetVisible(True)
+                    ucrSaveColumn.SetVisible(True)
+                    If ucrSaveColumn.IsComplete AndAlso Not String.IsNullOrEmpty(ucrSaveColumn.GetText) _
+                        AndAlso Not String.IsNullOrEmpty(ucrDataFrameSave.strCurrDataFrame) Then
+
+                        clsTempFunction = clsSaveColumnFunction
+                        strAssign = ucrSaveColumn.GetText
+                    End If
+                ElseIf rdoSaveObject.Checked Then
+                    ucrDataFrameSave.SetVisible(True)
+                    ucrSaveGraph.SetVisible(True)
+                    ucrSaveTable.SetVisible(True)
+                    ucrSaveModel.SetVisible(True)
+                    If ucrSaveGraph.IsComplete AndAlso Not String.IsNullOrEmpty(ucrSaveGraph.GetText) Then
+                        clsTempFunction = clsSaveGraphFunction
+                        strAssign = ucrSaveGraph.GetText
+                        ucrSaveModel.ucrInputComboSave.SetText("")
+                        ucrSaveTable.ucrInputComboSave.SetText("")
+                    ElseIf ucrSaveModel.IsComplete AndAlso Not String.IsNullOrEmpty(ucrSaveModel.GetText) Then
+                        clsTempFunction = clsSaveModelFunction
+                        strAssign = ucrSaveModel.GetText
+                        ucrSaveGraph.ucrInputComboSave.SetText("")
+                        ucrSaveTable.ucrInputComboSave.SetText("")
+                    ElseIf ucrSaveTable.IsComplete AndAlso Not String.IsNullOrEmpty(ucrSaveTable.GetText) Then
+                        clsTempFunction = clsSaveTableFunction
+                        strAssign = ucrSaveTable.GetText
+                        ucrSaveGraph.ucrInputComboSave.SetText("")
+                        ucrSaveModel.ucrInputComboSave.SetText("")
+                    End If
+                End If
+                If clsTempFunction.clsParameters.Count > 0 AndAlso Not String.IsNullOrEmpty(strAssign) Then
+                    Dim strAssignedScript As String = ""
+                    'clone the function first because the ToScript function modifies the contents of the function.
+                    Dim strAssignedTo As String = clsTempFunction.Clone.ToScript(strScript:=strAssignedScript)
+                    Dim strScript = strAssign & " <- " & strAssignedTo
+                    strScript = strScript.Trim & Environment.NewLine & strAssignedScript.Split(vbCrLf)(1).Trim
+                    ucrInputPreviewLibrary.SetText(strScript)
+                    AddAssignToString(strAssignedTo)
+                Else
+                    ucrInputPreviewLibrary.txtInput.Clear()
+                End If
             End If
-        End If
+        Catch ex As Exception
+            MsgBox(ex.Message)
+        End Try
     End Sub
 
     Private Sub TestOkEnabled()

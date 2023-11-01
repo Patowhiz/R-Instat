@@ -1,9 +1,9 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class dlgScript
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
-    <System.Diagnostics.DebuggerNonUserCode()> _
+    <System.Diagnostics.DebuggerNonUserCode()>
     Protected Overrides Sub Dispose(ByVal disposing As Boolean)
         Try
             If disposing AndAlso components IsNot Nothing Then
@@ -20,7 +20,7 @@ Partial Class dlgScript
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.  
     'Do not modify it using the code editor.
-    <System.Diagnostics.DebuggerStepThrough()> _
+    <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.TabControl1 = New System.Windows.Forms.TabControl()
         Me.TabPage1 = New System.Windows.Forms.TabPage()
@@ -49,13 +49,16 @@ Partial Class dlgScript
         Me.ucrSaveModel = New instat.ucrSave()
         Me.ucrSaveTable = New instat.ucrSave()
         Me.ucrSaveColumn = New instat.ucrSave()
-        Me.ucrDataFrameSave = New instat.ucrDataFrame()
         Me.ucrSaveGraph = New instat.ucrSave()
         Me.ucrPnlSaveData = New instat.UcrPanel()
+        Me.ucrDataFrameSave = New instat.ucrDataFrame()
         Me.TabPage4 = New System.Windows.Forms.TabPage()
         Me.Label2 = New System.Windows.Forms.Label()
         Me.ucrInputRemoveObject = New instat.ucrInputTextBox()
         Me.TabPage6 = New System.Windows.Forms.TabPage()
+        Me.rdoFunction = New System.Windows.Forms.RadioButton()
+        Me.rdoData = New System.Windows.Forms.RadioButton()
+        Me.ucrPnlExample = New instat.UcrPanel()
         Me.lstCollection = New System.Windows.Forms.ListView()
         Me.clmDatasets = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
         Me.clmDesc = CType(New System.Windows.Forms.ColumnHeader(), System.Windows.Forms.ColumnHeader)
@@ -320,9 +323,9 @@ Partial Class dlgScript
         Me.TabPage3.Controls.Add(Me.ucrSaveModel)
         Me.TabPage3.Controls.Add(Me.ucrSaveTable)
         Me.TabPage3.Controls.Add(Me.ucrSaveColumn)
-        Me.TabPage3.Controls.Add(Me.ucrDataFrameSave)
         Me.TabPage3.Controls.Add(Me.ucrSaveGraph)
         Me.TabPage3.Controls.Add(Me.ucrPnlSaveData)
+        Me.TabPage3.Controls.Add(Me.ucrDataFrameSave)
         Me.TabPage3.Location = New System.Drawing.Point(4, 29)
         Me.TabPage3.Margin = New System.Windows.Forms.Padding(4)
         Me.TabPage3.Name = "TabPage3"
@@ -436,17 +439,6 @@ Partial Class dlgScript
         Me.ucrSaveColumn.Size = New System.Drawing.Size(411, 33)
         Me.ucrSaveColumn.TabIndex = 35
         '
-        'ucrDataFrameSave
-        '
-        Me.ucrDataFrameSave.AutoSize = True
-        Me.ucrDataFrameSave.bDropUnusedFilterLevels = False
-        Me.ucrDataFrameSave.bUseCurrentFilter = True
-        Me.ucrDataFrameSave.Location = New System.Drawing.Point(20, 74)
-        Me.ucrDataFrameSave.Margin = New System.Windows.Forms.Padding(0)
-        Me.ucrDataFrameSave.Name = "ucrDataFrameSave"
-        Me.ucrDataFrameSave.Size = New System.Drawing.Size(252, 59)
-        Me.ucrDataFrameSave.TabIndex = 29
-        '
         'ucrSaveGraph
         '
         Me.ucrSaveGraph.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
@@ -464,6 +456,17 @@ Partial Class dlgScript
         Me.ucrPnlSaveData.Name = "ucrPnlSaveData"
         Me.ucrPnlSaveData.Size = New System.Drawing.Size(603, 54)
         Me.ucrPnlSaveData.TabIndex = 47
+        '
+        'ucrDataFrameSave
+        '
+        Me.ucrDataFrameSave.AutoSize = True
+        Me.ucrDataFrameSave.bDropUnusedFilterLevels = False
+        Me.ucrDataFrameSave.bUseCurrentFilter = True
+        Me.ucrDataFrameSave.Location = New System.Drawing.Point(20, 74)
+        Me.ucrDataFrameSave.Margin = New System.Windows.Forms.Padding(0)
+        Me.ucrDataFrameSave.Name = "ucrDataFrameSave"
+        Me.ucrDataFrameSave.Size = New System.Drawing.Size(252, 59)
+        Me.ucrDataFrameSave.TabIndex = 29
         '
         'TabPage4
         '
@@ -500,6 +503,9 @@ Partial Class dlgScript
         '
         'TabPage6
         '
+        Me.TabPage6.Controls.Add(Me.rdoFunction)
+        Me.TabPage6.Controls.Add(Me.rdoData)
+        Me.TabPage6.Controls.Add(Me.ucrPnlExample)
         Me.TabPage6.Controls.Add(Me.lstCollection)
         Me.TabPage6.Controls.Add(Me.Label3)
         Me.TabPage6.Controls.Add(Me.ucrComboGetPackages)
@@ -510,6 +516,41 @@ Partial Class dlgScript
         Me.TabPage6.TabIndex = 6
         Me.TabPage6.Text = "Get Example"
         Me.TabPage6.UseVisualStyleBackColor = True
+        '
+        'rdoFunction
+        '
+        Me.rdoFunction.AutoSize = True
+        Me.rdoFunction.ImeMode = System.Windows.Forms.ImeMode.NoControl
+        Me.rdoFunction.Location = New System.Drawing.Point(221, 55)
+        Me.rdoFunction.Margin = New System.Windows.Forms.Padding(4)
+        Me.rdoFunction.Name = "rdoFunction"
+        Me.rdoFunction.Size = New System.Drawing.Size(96, 24)
+        Me.rdoFunction.TabIndex = 50
+        Me.rdoFunction.TabStop = True
+        Me.rdoFunction.Text = "Function"
+        Me.rdoFunction.UseVisualStyleBackColor = True
+        '
+        'rdoData
+        '
+        Me.rdoData.AutoSize = True
+        Me.rdoData.ImeMode = System.Windows.Forms.ImeMode.NoControl
+        Me.rdoData.Location = New System.Drawing.Point(41, 55)
+        Me.rdoData.Margin = New System.Windows.Forms.Padding(4)
+        Me.rdoData.Name = "rdoData"
+        Me.rdoData.Size = New System.Drawing.Size(69, 24)
+        Me.rdoData.TabIndex = 49
+        Me.rdoData.TabStop = True
+        Me.rdoData.Text = "Data"
+        Me.rdoData.UseVisualStyleBackColor = True
+        '
+        'ucrPnlExample
+        '
+        Me.ucrPnlExample.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
+        Me.ucrPnlExample.Location = New System.Drawing.Point(21, 52)
+        Me.ucrPnlExample.Margin = New System.Windows.Forms.Padding(9)
+        Me.ucrPnlExample.Name = "ucrPnlExample"
+        Me.ucrPnlExample.Size = New System.Drawing.Size(376, 30)
+        Me.ucrPnlExample.TabIndex = 48
         '
         'lstCollection
         '
@@ -553,7 +594,7 @@ Partial Class dlgScript
         Me.ucrComboGetPackages.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
         Me.ucrComboGetPackages.GetSetSelectedIndex = -1
         Me.ucrComboGetPackages.IsReadOnly = False
-        Me.ucrComboGetPackages.Location = New System.Drawing.Point(17, 53)
+        Me.ucrComboGetPackages.Location = New System.Drawing.Point(115, 17)
         Me.ucrComboGetPackages.Margin = New System.Windows.Forms.Padding(14)
         Me.ucrComboGetPackages.Name = "ucrComboGetPackages"
         Me.ucrComboGetPackages.Size = New System.Drawing.Size(206, 32)
@@ -669,4 +710,7 @@ Partial Class dlgScript
     Friend WithEvents lstCollection As ListView
     Friend WithEvents clmDatasets As ColumnHeader
     Friend WithEvents clmDesc As ColumnHeader
+    Friend WithEvents ucrPnlExample As UcrPanel
+    Friend WithEvents rdoFunction As RadioButton
+    Friend WithEvents rdoData As RadioButton
 End Class
