@@ -13,7 +13,7 @@
 '
 ' You should have received a copy of the GNU General Public License
 ' along with this program.  If not, see <http://www.gnu.org/licenses/>.
-Imports System.IO
+
 Imports RInsightF461
 
 ''' <summary>
@@ -31,7 +31,13 @@ Public Class clsOutputElement
     Private _outputType As OutputType
 
     'holds the file paths to outputs or the a string output
-    Private _strOutput As String
+    Private _strOutput() As String
+
+
+    Public Sub New(id As Integer, strScript As String, Optional strOutput() As String = Nothing)
+        Me._id = id
+        SetContent(strScript, strOutput)
+    End Sub
 
 
     ''' <summary>
@@ -53,17 +59,7 @@ Public Class clsOutputElement
         End Get
     End Property
 
-    ''' <summary>
-    ''' Gets the type of output
-    ''' </summary>
-    ''' <returns></returns>
-    Public ReadOnly Property OutputType() As OutputType
-        Get
-            Return _outputType
-        End Get
-    End Property
-
-    Public ReadOnly Property Output As String
+    Public ReadOnly Property Output As String()
         Get
             Return _strOutput
         End Get
@@ -76,12 +72,10 @@ Public Class clsOutputElement
     ''' <summary>
     ''' Sets the contents of the output element
     ''' </summary>
-    ''' <param name="strScript">R script producing the output</param>
-    ''' <param name="outputType">Type of output</param>
+    ''' <param name="strScript">R script producing the output</param> 
     ''' <param name="strOutput">Output produced, can be file name or string value</param>
-    Public Sub SetContent(strScript As String, outputType As OutputType, Optional strOutput As String = "")
+    Public Sub SetContent(strScript As String, Optional strOutput() As String = Nothing)
         _strScript = strScript
-        _outputType = outputType
         _strOutput = strOutput
     End Sub
 
@@ -111,12 +105,6 @@ Public Class clsOutputElement
                 Return New List(Of clsRScriptElement)
             End Try
             Return _lstRScriptElements
-        End Get
-    End Property
-
-    Public ReadOnly Property IsFile As Boolean
-        Get
-            Return File.Exists(Output)
         End Get
     End Property
 

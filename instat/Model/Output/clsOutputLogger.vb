@@ -70,54 +70,41 @@ Public Class clsOutputLogger
         End Set
     End Property
 
-    Public Sub AddOutput(strScript As String, strOutput As String, bAsFile As Boolean, bDisplayOutputInExternalViewer As Boolean)
+    Public Sub AddOutput(strScript As String, strOutput() As String, bAsFile As Boolean, bDisplayOutputInExternalViewer As Boolean)
         'Note this always takes the last script added as corresponding script
         If String.IsNullOrWhiteSpace(strScript) Then
             Throw New Exception("Cannot find script to attach output to.")
             Exit Sub
         End If
 
-        'add the R script as an output element
-        Dim rScriptElement As New clsOutputElement
-        rScriptElement.SetContent(strScript, OutputType.Script, "")
-        _outputElements.Add(rScriptElement)
+        'Dim outputType As OutputType
+        'If String.IsNullOrEmpty(strOutput) Then
+        '    outputType = OutputType.Script
+        'ElseIf Not bAsFile Then
+        '    outputType = OutputType.TextOutput
+        'Else
+        '    Dim strFileExtension As String = Path.GetExtension(strOutput).ToLower
+        '    Select Case strFileExtension
+        '        Case ".png"
+        '            outputType = OutputType.ImageOutput
+        '        Case ".html"
+        '            outputType = OutputType.HtmlOutput
+        '        Case ".txt"
+        '            outputType = OutputType.TextOutput
+        '        Case Else
+        '            MessageBox.Show("The file type to be added is currently not suported",
+        '                        "Developer Error",
+        '                        MessageBoxButtons.OK,
+        '                        MessageBoxIcon.Error)
+        '            Exit Sub
+        '    End Select
+        'End If
+
+        Dim outputElement As New clsOutputElement(0, strScript, strOutput)
+        _outputElements.Add(outputElement)
+
         'raise event for output pages
-        RaiseEvent NewOutputAdded(rScriptElement, False)
-
-
-        If Not String.IsNullOrEmpty(strOutput) Then
-            Dim outputElement As New clsOutputElement
-            Dim outputType As OutputType
-            If bAsFile Then
-                Dim strFileExtension As String = Path.GetExtension(strOutput).ToLower
-                Select Case strFileExtension
-                    Case ".png"
-                        outputType = OutputType.ImageOutput
-                    Case ".html"
-                        outputType = OutputType.HtmlOutput
-                    Case ".txt"
-                        outputType = OutputType.TextOutput
-                    Case Else
-                        MessageBox.Show("The file type to be added is currently not suported",
-                                    "Developer Error",
-                                    MessageBoxButtons.OK,
-                                    MessageBoxIcon.Error)
-                        Exit Sub
-                End Select
-            Else
-                outputType = OutputType.TextOutput
-            End If
-
-            'add the output with it's R script as another output element
-            outputElement.SetContent("", outputType, strOutput)
-            '_outputElements.Add(outputElement)
-            'raise event for output pages
-            RaiseEvent NewOutputAdded(outputElement, bDisplayOutputInExternalViewer)
-
-        End If
-
-
-
+        RaiseEvent NewOutputAdded(outputElement, bDisplayOutputInExternalViewer)
     End Sub
 
     ''' <summary>

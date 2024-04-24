@@ -16,6 +16,7 @@
 
 Imports System.Runtime.InteropServices
 Imports RInsightF461
+Imports System.IO
 
 ''' <summary>
 ''' Output page for R outputs
@@ -140,24 +141,47 @@ Public Class ucrOutputPage
 
 
         'then add the output of the script if there is an output
-        If Not String.IsNullOrEmpty(outputElement.Output) Then
+        If outputElement.Output IsNot Nothing AndAlso outputElement.Output.Length > 0 Then
             If bDisplayOutputInExternalViewer Then
                 Dim frmMaximiseOutput As New frmMaximiseOutput
-                frmMaximiseOutput.Show(strFileName:=outputElement.Output)
+                ' Maximise window does not support multiple outputs yet
+                frmMaximiseOutput.Show(strFileName:=outputElement.Output(0))
             Else
-                Select Case outputElement.OutputType
-                    Case OutputType.TextOutput
-                        AddNewTextOutput(outputElement)
-                    Case OutputType.ImageOutput
-                        AddNewImageOutput(outputElement)
-                    Case OutputType.HtmlOutput
-                        AddNewHtmlOutput(outputElement)
-                End Select
+                For Each strFilePath As String In outputElement.Output
+                    Dim outputType As OutputType = GetOutputType(strFilePath)
+                    Select Case outputType
+                        Case OutputType.TextOutput
+                            AddNewTextOutput(outputElement, strFilePath)
+                        Case OutputType.ImageOutput
+                            AddNewImageOutput(outputElement, strFilePath)
+                        Case OutputType.HtmlOutput
+                            AddNewHtmlOutput(outputElement, strFilePath)
+                    End Select
+                Next
+
             End If
         End If
         pnlMain.VerticalScroll.Value = pnlMain.VerticalScroll.Maximum
         pnlMain.PerformLayout()
     End Sub
+
+    Private Function GetOutputType(strFilePath As String) As OutputType
+        Dim strFileExtension As String = Path.GetExtension(strFilePath).ToLower
+        Select Case strFileExtension
+            Case ".txt"
+                Return OutputType.TextOutput
+            Case ".png"
+                Return OutputType.ImageOutput
+            Case ".html"
+                Return OutputType.HtmlOutput
+            Case Else
+                MessageBox.Show("The file type to be added as an output is currently not suported by the output window",
+                                "Developer Error",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error)
+                Return Nothing
+        End Select
+    End Function
 
     Private Sub AddNewScript(outputElement As clsOutputElement)
         Dim richTextBox As New RichTextBox With {
@@ -217,60 +241,46 @@ Public Class ucrOutputPage
 
 
 
-    Private Sub AddNewTextOutput(outputElement As clsOutputElement)
+    Private Sub AddNewTextOutput(outputElement As clsOutputElement, strFileOutput As String)
         Dim panel As Panel = AddElementPanel(outputElement)
 
-        If outputElement.IsFile Then
-            Dim linkLabel As New LinkLabel
-            Dim ucrTextViewer As New ucrTextViewer
+        Dim linkLabel As New LinkLabel
+        Dim ucrTextViewer As New ucrTextViewer
 
-            linkLabel.Text = "Maximise"
-            AddHandler linkLabel.Click, Sub()
-                                            Dim frmMaximiseOutput As New frmMaximiseOutput
-                                            frmMaximiseOutput.Show(strFileName:=outputElement.Output)
-                                        End Sub
+        linkLabel.Text = "Maximise"
+        AddHandler linkLabel.Click, Sub()
+                                        Dim frmMaximiseOutput As New frmMaximiseOutput
+                                        frmMaximiseOutput.Show(strFileOutput)
+                                    End Sub
 
-            ucrTextViewer.LoadTextFile(strFileName:=outputElement.Output)
-            ucrTextViewer.FormatText(OutputFont.ROutputFont, OutputFont.ROutputColour)
+        ucrTextViewer.LoadTextFile(strFileName:=strFileOutput)
+        ucrTextViewer.FormatText(OutputFont.ROutputFont, OutputFont.ROutputColour)
 
-            AddHandler ucrTextViewer.richTextBox.MouseLeave, AddressOf panelContents_MouseLeave
+        AddHandler ucrTextViewer.richTextBox.MouseLeave, AddressOf panelContents_MouseLeave
 
-            If frmMain.clsInstatOptions IsNot Nothing AndAlso frmMain.clsInstatOptions.iMaxOutputsHeight > -1 Then
-                'ucrTextViewer.Height = frmMain.clsInstatOptions.iMaxOutputsHeight
-                ucrTextViewer.MaximumSize = New Size(Integer.MaxValue, frmMain.clsInstatOptions.iMaxOutputsHeight)
-            End If
-
-            panel.Controls.Add(linkLabel)
-            panel.Controls.Add(ucrTextViewer)
-            panel.Controls.SetChildIndex(linkLabel, 0)
-            panel.Controls.SetChildIndex(ucrTextViewer, 0)
-            linkLabel.Dock = DockStyle.Top
-            ucrTextViewer.Dock = DockStyle.Top
-
-
-        Else
-            Dim richTextBox As New RichTextBox With {
-               .Dock = DockStyle.Top,
-               .BorderStyle = BorderStyle.None
-            }
-            AddFormatedTextToRichTextBox(richTextBox, outputElement.Output, OutputFont.ROutputFont, OutputFont.ROutputColour)
-            panel.Controls.Add(richTextBox)
-            panel.Controls.SetChildIndex(richTextBox, 0)
-            SetRichTextBoxHeight(richTextBox)
-            AddHandler richTextBox.KeyUp, AddressOf richTextBox_CopySelectedText
-            AddHandler richTextBox.MouseLeave, AddressOf panelContents_MouseLeave
-
+        If frmMain.clsInstatOptions IsNot Nothing AndAlso frmMain.clsInstatOptions.iMaxOutputsHeight > -1 Then
+            'ucrTextViewer.Height = frmMain.clsInstatOptions.iMaxOutputsHeight
+            ucrTextViewer.MaximumSize = New Size(Integer.MaxValue, frmMain.clsInstatOptions.iMaxOutputsHeight)
         End If
+
+        panel.Controls.Add(linkLabel)
+        panel.Controls.Add(ucrTextViewer)
+        panel.Controls.SetChildIndex(linkLabel, 0)
+        panel.Controls.SetChildIndex(ucrTextViewer, 0)
+        linkLabel.Dock = DockStyle.Top
+        ucrTextViewer.Dock = DockStyle.Top
+
+
     End Sub
 
-    Private Sub AddNewImageOutput(outputElement As clsOutputElement)
+    Private Sub AddNewImageOutput(outputElement As clsOutputElement, strFileOutput As String)
         Dim panel As Panel = AddElementPanel(outputElement)
         Dim linkLabel As New LinkLabel
         Dim pictureBox As New PictureBox
 
         linkLabel.Text = "Maximise"
 
-        pictureBox.Load(outputElement.Output)
+        pictureBox.Load(strFileOutput)
 
         If frmMain.clsInstatOptions IsNot Nothing AndAlso frmMain.clsInstatOptions.iMaxOutputsHeight > -1 Then
             pictureBox.Height = frmMain.clsInstatOptions.iMaxOutputsHeight
@@ -290,11 +300,11 @@ Public Class ucrOutputPage
 
         AddHandler linkLabel.Click, Sub()
                                         Dim frmMaximiseOutput As New frmMaximiseOutput
-                                        frmMaximiseOutput.Show(strFileName:=outputElement.Output)
+                                        frmMaximiseOutput.Show(strFileName:=strFileOutput)
                                     End Sub
     End Sub
 
-    Private Sub AddNewHtmlOutput(outputElement As clsOutputElement)
+    Private Sub AddNewHtmlOutput(outputElement As clsOutputElement, strFileOutput As String)
         Dim panel As Panel = AddElementPanel(outputElement)
         Dim linkLabel As New LinkLabel
 
@@ -303,10 +313,10 @@ Public Class ucrOutputPage
             linkLabel.Text = "Maximise"
             AddHandler linkLabel.Click, Sub()
                                             Dim frmMaximiseOutput As New frmMaximiseOutput
-                                            frmMaximiseOutput.Show(strFileName:=outputElement.Output)
+                                            frmMaximiseOutput.Show(strFileName:=strFileOutput)
                                         End Sub
 
-            ucrWebview.LoadHtmlFile(outputElement.Output)
+            ucrWebview.LoadHtmlFile(strFileOutput)
 
             If frmMain.clsInstatOptions IsNot Nothing AndAlso frmMain.clsInstatOptions.iMaxOutputsHeight > -1 Then
                 'ucrWebview.Height = frmMain.clsInstatOptions.iMaxOutputsHeight
@@ -328,7 +338,7 @@ Public Class ucrOutputPage
             AddHandler linkLabel.Click, Sub()
                                             'display the html output in default browser
                                             Cursor = Cursors.WaitCursor
-                                            Process.Start(outputElement.Output)
+                                            Process.Start(strFileOutput)
                                             Cursor = Cursors.Default
                                         End Sub
 
@@ -339,7 +349,7 @@ Public Class ucrOutputPage
 
             'display the html output in default browser
             Cursor = Cursors.WaitCursor
-            Process.Start(outputElement.Output)
+            Process.Start(strFileOutput)
             Cursor = Cursors.Default
         End If
 
@@ -412,7 +422,7 @@ Public Class ucrOutputPage
     End Sub
 
     Private Function CopyOneImageOnly() As Boolean
-        If SelectedElements.Count = 1 AndAlso SelectedElements(0).OutputType = OutputType.ImageOutput Then
+        If SelectedElements.Count = 1 AndAlso SelectedElements(0).OutputType = outputType.ImageOutput Then
             Dim element As clsOutputElement = SelectedElements(0)
             Clipboard.Clear()
             Clipboard.SetImage(GetBitmapFromFile(element.Output))
@@ -423,7 +433,7 @@ Public Class ucrOutputPage
 
     Private Sub AddElementToRichTextBox(element As clsOutputElement, richText As RichTextBox)
         Select Case element.OutputType
-            Case OutputType.Script
+            Case outputType.Script
                 Dim formattedRScript As List(Of clsRScriptElement) = element.FormattedRScript
                 'if settings are not available or both show commands and comments settings are enabled then just show the whole script
                 If formattedRScript.Count > 0 Then
