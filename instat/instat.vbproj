@@ -263,6 +263,12 @@
     <Compile Include="dlgFindInVariableOrFilter.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="dlgGeneralTable.Designer.vb">
+      <DependentUpon>dlgGeneralTable.vb</DependentUpon>
+    </Compile>
+    <Compile Include="dlgGeneralTable.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="dlgIDFCurves.Designer.vb">
       <DependentUpon>dlgIDFCurves.vb</DependentUpon>
     </Compile>
@@ -3103,6 +3109,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="dlgFindInVariableOrFilter.resx">
       <DependentUpon>dlgFindInVariableOrFilter.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dlgGeneralTable.resx">
+      <DependentUpon>dlgGeneralTable.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="dlgHomogenization.resx">
       <DependentUpon>dlgHomogenization.vb</DependentUpon>
