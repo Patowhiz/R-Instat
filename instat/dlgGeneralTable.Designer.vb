@@ -24,6 +24,13 @@ Partial Class dlgGeneralTable
     Private Sub InitializeComponent()
         Me.tbpFormatOptions = New System.Windows.Forms.TabControl()
         Me.tbpHeader = New System.Windows.Forms.TabPage()
+        Me.btnHeaderSubTitleFooterFormat = New System.Windows.Forms.Button()
+        Me.ucrInputHeaderSubtitleFooter = New instat.ucrInputTextBox()
+        Me.lblHeaderSubtitleFooter = New System.Windows.Forms.Label()
+        Me.lblHeaderTitleFooter = New System.Windows.Forms.Label()
+        Me.btnHeaderTitleFooterFormat = New System.Windows.Forms.Button()
+        Me.ucrInputHeaderTitleFooter = New instat.ucrInputTextBox()
+        Me.ucrChkIncludeHeader = New instat.ucrCheck()
         Me.btnHeaderSubTitleFormat = New System.Windows.Forms.Button()
         Me.btnHeaderTitleFormat = New System.Windows.Forms.Button()
         Me.ucrInputHeaderSubtitle = New instat.ucrInputTextBox()
@@ -55,8 +62,6 @@ Partial Class dlgGeneralTable
         Me.ucrPnlThemesPanel = New instat.UcrPanel()
         Me.UcrDataFrame1 = New instat.ucrDataFrame()
         Me.ucrBase = New instat.ucrButtons()
-        Me.ucrChkIncludeHeader = New instat.ucrCheck()
-        Me.UcrInputTextBox1 = New instat.ucrInputTextBox()
         Me.tbpFormatOptions.SuspendLayout()
         Me.tbpHeader.SuspendLayout()
         Me.tbpFooters.SuspendLayout()
@@ -73,7 +78,7 @@ Partial Class dlgGeneralTable
         Me.tbpFormatOptions.Controls.Add(Me.tbpFooters)
         Me.tbpFormatOptions.Controls.Add(Me.tbpSourceNotes)
         Me.tbpFormatOptions.Controls.Add(Me.tbpThemes)
-        Me.tbpFormatOptions.Location = New System.Drawing.Point(12, 66)
+        Me.tbpFormatOptions.Location = New System.Drawing.Point(10, 56)
         Me.tbpFormatOptions.Name = "tbpFormatOptions"
         Me.tbpFormatOptions.SelectedIndex = 0
         Me.tbpFormatOptions.Size = New System.Drawing.Size(650, 259)
@@ -81,7 +86,12 @@ Partial Class dlgGeneralTable
         '
         'tbpHeader
         '
-        Me.tbpHeader.Controls.Add(Me.UcrInputTextBox1)
+        Me.tbpHeader.Controls.Add(Me.btnHeaderSubTitleFooterFormat)
+        Me.tbpHeader.Controls.Add(Me.ucrInputHeaderSubtitleFooter)
+        Me.tbpHeader.Controls.Add(Me.lblHeaderSubtitleFooter)
+        Me.tbpHeader.Controls.Add(Me.lblHeaderTitleFooter)
+        Me.tbpHeader.Controls.Add(Me.btnHeaderTitleFooterFormat)
+        Me.tbpHeader.Controls.Add(Me.ucrInputHeaderTitleFooter)
         Me.tbpHeader.Controls.Add(Me.ucrChkIncludeHeader)
         Me.tbpHeader.Controls.Add(Me.btnHeaderSubTitleFormat)
         Me.tbpHeader.Controls.Add(Me.btnHeaderTitleFormat)
@@ -97,9 +107,80 @@ Partial Class dlgGeneralTable
         Me.tbpHeader.Text = "Headers"
         Me.tbpHeader.UseVisualStyleBackColor = True
         '
+        'btnHeaderSubTitleFooterFormat
+        '
+        Me.btnHeaderSubTitleFooterFormat.Location = New System.Drawing.Point(243, 167)
+        Me.btnHeaderSubTitleFooterFormat.Name = "btnHeaderSubTitleFooterFormat"
+        Me.btnHeaderSubTitleFooterFormat.Size = New System.Drawing.Size(75, 23)
+        Me.btnHeaderSubTitleFooterFormat.TabIndex = 20
+        Me.btnHeaderSubTitleFooterFormat.Text = "Format"
+        Me.btnHeaderSubTitleFooterFormat.UseVisualStyleBackColor = True
+        '
+        'ucrInputHeaderSubtitleFooter
+        '
+        Me.ucrInputHeaderSubtitleFooter.AddQuotesIfUnrecognised = True
+        Me.ucrInputHeaderSubtitleFooter.AutoSize = True
+        Me.ucrInputHeaderSubtitleFooter.IsMultiline = False
+        Me.ucrInputHeaderSubtitleFooter.IsReadOnly = False
+        Me.ucrInputHeaderSubtitleFooter.Location = New System.Drawing.Point(97, 169)
+        Me.ucrInputHeaderSubtitleFooter.Margin = New System.Windows.Forms.Padding(9)
+        Me.ucrInputHeaderSubtitleFooter.Name = "ucrInputHeaderSubtitleFooter"
+        Me.ucrInputHeaderSubtitleFooter.Size = New System.Drawing.Size(137, 21)
+        Me.ucrInputHeaderSubtitleFooter.TabIndex = 19
+        '
+        'lblHeaderSubtitleFooter
+        '
+        Me.lblHeaderSubtitleFooter.AutoSize = True
+        Me.lblHeaderSubtitleFooter.ImeMode = System.Windows.Forms.ImeMode.NoControl
+        Me.lblHeaderSubtitleFooter.Location = New System.Drawing.Point(12, 174)
+        Me.lblHeaderSubtitleFooter.Name = "lblHeaderSubtitleFooter"
+        Me.lblHeaderSubtitleFooter.Size = New System.Drawing.Size(78, 13)
+        Me.lblHeaderSubtitleFooter.TabIndex = 18
+        Me.lblHeaderSubtitleFooter.Text = "Subtitle Footer:"
+        '
+        'lblHeaderTitleFooter
+        '
+        Me.lblHeaderTitleFooter.AutoSize = True
+        Me.lblHeaderTitleFooter.ImeMode = System.Windows.Forms.ImeMode.NoControl
+        Me.lblHeaderTitleFooter.Location = New System.Drawing.Point(13, 85)
+        Me.lblHeaderTitleFooter.Name = "lblHeaderTitleFooter"
+        Me.lblHeaderTitleFooter.Size = New System.Drawing.Size(63, 13)
+        Me.lblHeaderTitleFooter.TabIndex = 17
+        Me.lblHeaderTitleFooter.Text = "Title Footer:"
+        '
+        'btnHeaderTitleFooterFormat
+        '
+        Me.btnHeaderTitleFooterFormat.Location = New System.Drawing.Point(231, 78)
+        Me.btnHeaderTitleFooterFormat.Name = "btnHeaderTitleFooterFormat"
+        Me.btnHeaderTitleFooterFormat.Size = New System.Drawing.Size(75, 23)
+        Me.btnHeaderTitleFooterFormat.TabIndex = 16
+        Me.btnHeaderTitleFooterFormat.Text = "Format"
+        Me.btnHeaderTitleFooterFormat.UseVisualStyleBackColor = True
+        '
+        'ucrInputHeaderTitleFooter
+        '
+        Me.ucrInputHeaderTitleFooter.AddQuotesIfUnrecognised = True
+        Me.ucrInputHeaderTitleFooter.AutoSize = True
+        Me.ucrInputHeaderTitleFooter.IsMultiline = False
+        Me.ucrInputHeaderTitleFooter.IsReadOnly = False
+        Me.ucrInputHeaderTitleFooter.Location = New System.Drawing.Point(87, 80)
+        Me.ucrInputHeaderTitleFooter.Margin = New System.Windows.Forms.Padding(9)
+        Me.ucrInputHeaderTitleFooter.Name = "ucrInputHeaderTitleFooter"
+        Me.ucrInputHeaderTitleFooter.Size = New System.Drawing.Size(137, 21)
+        Me.ucrInputHeaderTitleFooter.TabIndex = 15
+        '
+        'ucrChkIncludeHeader
+        '
+        Me.ucrChkIncludeHeader.AutoSize = True
+        Me.ucrChkIncludeHeader.Checked = False
+        Me.ucrChkIncludeHeader.Location = New System.Drawing.Point(18, 9)
+        Me.ucrChkIncludeHeader.Name = "ucrChkIncludeHeader"
+        Me.ucrChkIncludeHeader.Size = New System.Drawing.Size(100, 23)
+        Me.ucrChkIncludeHeader.TabIndex = 14
+        '
         'btnHeaderSubTitleFormat
         '
-        Me.btnHeaderSubTitleFormat.Location = New System.Drawing.Point(219, 137)
+        Me.btnHeaderSubTitleFormat.Location = New System.Drawing.Point(244, 132)
         Me.btnHeaderSubTitleFormat.Name = "btnHeaderSubTitleFormat"
         Me.btnHeaderSubTitleFormat.Size = New System.Drawing.Size(75, 23)
         Me.btnHeaderSubTitleFormat.TabIndex = 13
@@ -108,7 +189,7 @@ Partial Class dlgGeneralTable
         '
         'btnHeaderTitleFormat
         '
-        Me.btnHeaderTitleFormat.Location = New System.Drawing.Point(219, 51)
+        Me.btnHeaderTitleFormat.Location = New System.Drawing.Point(232, 51)
         Me.btnHeaderTitleFormat.Name = "btnHeaderTitleFormat"
         Me.btnHeaderTitleFormat.Size = New System.Drawing.Size(75, 23)
         Me.btnHeaderTitleFormat.TabIndex = 12
@@ -121,7 +202,7 @@ Partial Class dlgGeneralTable
         Me.ucrInputHeaderSubtitle.AutoSize = True
         Me.ucrInputHeaderSubtitle.IsMultiline = False
         Me.ucrInputHeaderSubtitle.IsReadOnly = False
-        Me.ucrInputHeaderSubtitle.Location = New System.Drawing.Point(67, 139)
+        Me.ucrInputHeaderSubtitle.Location = New System.Drawing.Point(98, 134)
         Me.ucrInputHeaderSubtitle.Margin = New System.Windows.Forms.Padding(9)
         Me.ucrInputHeaderSubtitle.Name = "ucrInputHeaderSubtitle"
         Me.ucrInputHeaderSubtitle.Size = New System.Drawing.Size(137, 21)
@@ -133,7 +214,7 @@ Partial Class dlgGeneralTable
         Me.ucrInputHeaderTitle.AutoSize = True
         Me.ucrInputHeaderTitle.IsMultiline = False
         Me.ucrInputHeaderTitle.IsReadOnly = False
-        Me.ucrInputHeaderTitle.Location = New System.Drawing.Point(67, 53)
+        Me.ucrInputHeaderTitle.Location = New System.Drawing.Point(86, 53)
         Me.ucrInputHeaderTitle.Margin = New System.Windows.Forms.Padding(9)
         Me.ucrInputHeaderTitle.Name = "ucrInputHeaderTitle"
         Me.ucrInputHeaderTitle.Size = New System.Drawing.Size(137, 21)
@@ -143,7 +224,7 @@ Partial Class dlgGeneralTable
         '
         Me.lblHeaderSubtitle.AutoSize = True
         Me.lblHeaderSubtitle.ImeMode = System.Windows.Forms.ImeMode.NoControl
-        Me.lblHeaderSubtitle.Location = New System.Drawing.Point(13, 144)
+        Me.lblHeaderSubtitle.Location = New System.Drawing.Point(13, 139)
         Me.lblHeaderSubtitle.Name = "lblHeaderSubtitle"
         Me.lblHeaderSubtitle.Size = New System.Drawing.Size(45, 13)
         Me.lblHeaderSubtitle.TabIndex = 9
@@ -390,47 +471,26 @@ Partial Class dlgGeneralTable
         Me.UcrDataFrame1.AutoSize = True
         Me.UcrDataFrame1.bDropUnusedFilterLevels = False
         Me.UcrDataFrame1.bUseCurrentFilter = True
-        Me.UcrDataFrame1.Location = New System.Drawing.Point(12, 9)
+        Me.UcrDataFrame1.Location = New System.Drawing.Point(10, 7)
         Me.UcrDataFrame1.Margin = New System.Windows.Forms.Padding(0)
         Me.UcrDataFrame1.Name = "UcrDataFrame1"
         Me.UcrDataFrame1.Size = New System.Drawing.Size(151, 43)
-        Me.UcrDataFrame1.TabIndex = 6
+        Me.UcrDataFrame1.TabIndex = 1
         '
         'ucrBase
         '
         Me.ucrBase.AutoSize = True
         Me.ucrBase.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink
-        Me.ucrBase.Location = New System.Drawing.Point(16, 331)
+        Me.ucrBase.Location = New System.Drawing.Point(10, 318)
         Me.ucrBase.Name = "ucrBase"
         Me.ucrBase.Size = New System.Drawing.Size(408, 52)
         Me.ucrBase.TabIndex = 7
-        '
-        'ucrChkIncludeHeader
-        '
-        Me.ucrChkIncludeHeader.AutoSize = True
-        Me.ucrChkIncludeHeader.Checked = False
-        Me.ucrChkIncludeHeader.Location = New System.Drawing.Point(18, 9)
-        Me.ucrChkIncludeHeader.Name = "ucrChkIncludeHeader"
-        Me.ucrChkIncludeHeader.Size = New System.Drawing.Size(100, 23)
-        Me.ucrChkIncludeHeader.TabIndex = 14
-        '
-        'UcrInputTextBox1
-        '
-        Me.UcrInputTextBox1.AddQuotesIfUnrecognised = True
-        Me.UcrInputTextBox1.AutoSize = True
-        Me.UcrInputTextBox1.IsMultiline = False
-        Me.UcrInputTextBox1.IsReadOnly = False
-        Me.UcrInputTextBox1.Location = New System.Drawing.Point(68, 80)
-        Me.UcrInputTextBox1.Margin = New System.Windows.Forms.Padding(9)
-        Me.UcrInputTextBox1.Name = "UcrInputTextBox1"
-        Me.UcrInputTextBox1.Size = New System.Drawing.Size(137, 21)
-        Me.UcrInputTextBox1.TabIndex = 15
         '
         'dlgGeneralTable
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(702, 472)
+        Me.ClientSize = New System.Drawing.Size(702, 383)
         Me.Controls.Add(Me.ucrBase)
         Me.Controls.Add(Me.UcrDataFrame1)
         Me.Controls.Add(Me.tbpFormatOptions)
@@ -488,5 +548,10 @@ Partial Class dlgGeneralTable
     Friend WithEvents UcrDataFrame1 As ucrDataFrame
     Friend WithEvents ucrBase As ucrButtons
     Friend WithEvents ucrChkIncludeHeader As ucrCheck
-    Friend WithEvents UcrInputTextBox1 As ucrInputTextBox
+    Friend WithEvents ucrInputHeaderTitleFooter As ucrInputTextBox
+    Friend WithEvents btnHeaderSubTitleFooterFormat As Button
+    Friend WithEvents ucrInputHeaderSubtitleFooter As ucrInputTextBox
+    Friend WithEvents lblHeaderSubtitleFooter As Label
+    Friend WithEvents lblHeaderTitleFooter As Label
+    Friend WithEvents btnHeaderTitleFooterFormat As Button
 End Class
