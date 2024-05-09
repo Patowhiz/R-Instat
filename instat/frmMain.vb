@@ -634,7 +634,7 @@ Public Class frmMain
         dlgRegularSequence.ShowDialog()
     End Sub
 
-    Private Sub mnuDescribeSpecificTables_Click(sender As Object, e As EventArgs) Handles mnuDescribeSpecificTables.Click
+    Private Sub mnuDescribeSpecificTables_Click(sender As Object, e As EventArgs) Handles mnuDescribeSpecificSummaries.Click
         dlgSummaryTables.ShowDialog()
     End Sub
 
@@ -2731,5 +2731,9 @@ Public Class frmMain
 
     Private Sub mnuClimaticFileExportToGoogleBucketsToolStrip_Click(sender As Object, e As EventArgs) Handles mnuClimaticFileExportToGoogleBucketsToolStrip.Click
         dlgExportClimaticDefinitions.ShowDialog()
+    End Sub
+
+    Private Sub mnuDescribeTables_Click(sender As Object, e As EventArgs) Handles mnuDescribeTables.Click
+        dlgGeneralTable.ShowDialog()
     End Sub
 End Class
