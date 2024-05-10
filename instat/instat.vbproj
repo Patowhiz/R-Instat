@@ -263,6 +263,7 @@
     <Compile Include="dlgFindInVariableOrFilter.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="UserTables\clsTablesUtils.vb" />
     <Compile Include="UserTables\dlgGeneralTable.Designer.vb">
       <DependentUpon>dlgGeneralTable.vb</DependentUpon>
     </Compile>
@@ -3031,6 +3032,12 @@
     <Compile Include="UserControl\ucrOutputPages.vb">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="UserTables\ucrHeaders.Designer.vb">
+      <DependentUpon>ucrHeaders.vb</DependentUpon>
+    </Compile>
+    <Compile Include="UserTables\ucrHeaders.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="dlgApsimx.resx">
@@ -5324,6 +5331,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserControl\ucrOutputPages.resx">
       <DependentUpon>ucrOutputPages.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserTables\ucrHeaders.resx">
+      <DependentUpon>ucrHeaders.vb</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

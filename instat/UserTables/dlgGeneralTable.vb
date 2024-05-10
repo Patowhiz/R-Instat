@@ -41,7 +41,7 @@ Public Class dlgGeneralTable
         autoTranslate(Me)
     End Sub
 
-    Private Sub ucrChkIncludeHeader_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrChkIncludeHeader.ControlValueChanged
+    Private Sub ucrChkIncludeHeader_ControlValueChanged(ucrChangedControl As ucrCore)
         If ucrChkIncludeHeader.Checked Then
             clsBaseOperator.AddParameter(strParameterName:="tab_header_funct_param", clsRFunctionParameter:=clsHeaderRFunction, iPosition:=2, bIncludeArgumentName:=False)
         Else
@@ -57,7 +57,7 @@ Public Class dlgGeneralTable
         updateHeaderFooterControlsVisibility()
     End Sub
 
-    Private Sub ucrInputHeaderTitleFooter_CControlValueChanged(ucrChangedControl As ucrCore) Handles ucrInputHeaderTitleFooter.ControlValueChanged
+    Private Sub ucrInputHeaderTitleFooter_CControlValueChanged(ucrChangedControl As ucrCore)
         If ucrInputHeaderTitle.IsEmpty() OrElse ucrInputHeaderTitleFooter.IsEmpty() Then
             clsBaseOperator.RemoveParameterByName("tab_footnote_title_param")
         Else
@@ -69,7 +69,7 @@ Public Class dlgGeneralTable
         ShowTextFormSubDialog(clsTitleRFunction)
     End Sub
 
-    Private Sub btnHeaderTitleFooterFormat_Click(sender As Object, e As EventArgs) Handles btnHeaderTitleFooterFormat.Click
+    Private Sub btnHeaderTitleFooterFormat_Click(sender As Object, e As EventArgs)
         ShowTextFormSubDialog(clsTitleFooterRFunction)
     End Sub
 
@@ -90,7 +90,7 @@ Public Class dlgGeneralTable
         updateHeaderFooterControlsVisibility()
     End Sub
 
-    Private Sub ucrInputHeaderSubtitleFooter_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrInputHeaderSubtitleFooter.ControlValueChanged
+    Private Sub ucrInputHeaderSubtitleFooter_ControlValueChanged(ucrChangedControl As ucrCore)
         If ucrInputHeaderSubtitle.IsEmpty() OrElse ucrInputHeaderSubtitleFooter.IsEmpty() Then
             ' Remove Subtitle footer parameter when Subtitle has not been input is empty or when the footer has not been input 
             clsHeaderRFunction.RemoveParameterByName("tab_footnote_subtitle_param")
@@ -104,11 +104,11 @@ Public Class dlgGeneralTable
     End Sub
 
 
-    Private Sub btnHeaderSubtitleFooterFormat_Click(sender As Object, e As EventArgs) Handles btnHeaderSubtitleFooterFormat.Click
+    Private Sub btnHeaderSubtitleFooterFormat_Click(sender As Object, e As EventArgs)
         ShowTextFormSubDialog(clsSubtitleFooterRFunction)
     End Sub
 
-    Private Sub ucrInputHeaderTitleNSubtitleFooter_ControlValueChanged(ucrChangedControl As ucrCore) Handles ucrInputHeaderTitleNSubtitleFooter.ControlValueChanged
+    Private Sub ucrInputHeaderTitleNSubtitleFooter_ControlValueChanged(ucrChangedControl As ucrCore)
         If ucrInputHeaderTitle.IsEmpty() OrElse ucrInputHeaderSubtitle.IsEmpty() OrElse ucrInputHeaderTitleNSubtitleFooter.IsEmpty() Then
             clsHeaderRFunction.RemoveParameterByName("tab_footnote_titleNsubtitle_param")
         Else
@@ -116,7 +116,7 @@ Public Class dlgGeneralTable
         End If
     End Sub
 
-    Private Sub btnHeaderTitleNSubtitleFooterFormat_Click(sender As Object, e As EventArgs) Handles btnHeaderTitleNSubtitleFooterFormat.Click
+    Private Sub btnHeaderTitleNSubtitleFooterFormat_Click(sender As Object, e As EventArgs)
         ShowTextFormSubDialog(clsTitleNSubtitleFooterRFunction)
     End Sub
 
@@ -265,9 +265,6 @@ Public Class dlgGeneralTable
         clsCellsTitleRFunction.SetPackageName("gt")
         clsCellsTitleRFunction.SetRCommand("cells_title")
 
-        For Each str As String In groupsParameterValues
-
-        Next
 
         For index As Integer = 0 To groupsParameterValues.Count - 1
             groupsParameterValues(index) = Chr(34) & groupsParameterValues(index) & Chr(34)
@@ -324,7 +321,7 @@ Public Class dlgGeneralTable
                         ' todo go through the location function
                         Dim clsFooterLocationNoteRFunction As RFunction = clsFootNoteRParam.clsArgumentCodeStructure
 
-                        If clsFooterLocationNoteRFunction.strRCommand = "cells_body" AndAlso dataGridCellFooterNotes Is Me.dataGridCellFooterNotes Then
+                        If clsFooterLocationNoteRFunction.strRCommand = "cells_body" Then
                             For Each clsFootNoteLocationRParam As RParameter In clsFooterLocationNoteRFunction.clsParameters
                                 If clsFootNoteLocationRParam.strArgumentName = "columns" Then
                                     row.Cells(1).Value = GetStringValue(clsFootNoteLocationRParam.strArgumentValue, False)
